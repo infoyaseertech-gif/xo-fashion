@@ -1,0 +1,7 @@
+project_id = "xo-fashion"
+
+[functions.paystack-init]
+verify_jwt = false      # guests can pay; the order's private token is the credential
+
+[functions.paystack-webhook]
+verify_jwt = false      # called by Paystack; protected by HMAC signature instead

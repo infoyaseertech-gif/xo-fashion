@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="X and O: premium jilbabs, hijabs and prayer hijabs. Made in Nigeria and Egypt. Delivery across Nigeria.">
+<style>html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>X and O</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@400;500;700&family=Caveat:wght@700&display=swap">
+<style>
+/* Layout: arched hero over blush brush strokes (from the logo), then a 2-up product grid that grows to 4, a bottom-sheet product view on phones, and a slide-in cart. */
+:root{
+  --bg:#fffafa; --surface:#ffffff; --blush:#fbe4e8; --pink:#e59bb0; --ink:#2d1a18; --muted:#7b625f;
+  --brown:#4a2420; --on-brown:#fff6f4; --line:#f1dddd; --wa:#1d9a52; --ok:#2f7d4f; --warn:#a85a12; --crit:#b3261e; --shade:rgba(45,26,24,.45);
+  --serif:'Cormorant Garamond',Georgia,serif; --sans:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif; --hand:'Caveat','Segoe Script',cursive;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1b1112; --surface:#271a1b; --blush:#3a2227; --pink:#e59bb0; --ink:#f8ebea; --muted:#c3a9a6;
+  --brown:#f3bccb; --on-brown:#2a1416; --line:#3b2a2b; --wa:#37b36d; --ok:#5fc287; --warn:#e8a15c; --crit:#ff8a80; --shade:rgba(0,0,0,.6); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1b1112; --surface:#271a1b; --blush:#3a2227; --pink:#e59bb0; --ink:#f8ebea; --muted:#c3a9a6;
+  --brown:#f3bccb; --on-brown:#2a1416; --line:#3b2a2b; --wa:#37b36d; --ok:#5fc287; --warn:#e8a15c; --crit:#ff8a80; --shade:rgba(0,0,0,.6); color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:110px}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans);overflow-x:hidden;padding-block:0}
+body.lock{overflow:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:60}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.08;margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:46px;padding:0 1.3rem;border-radius:999px;border:1.5px solid var(--brown);background:var(--brown);color:var(--on-brown);font-weight:700;text-decoration:none;transition:transform .15s,opacity .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+.btn.wa{background:var(--wa);border-color:var(--wa);color:#fff}
+.btn.sm{min-height:36px;padding:0 .9rem;font-size:.9rem}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+.bar{background:var(--brown);color:var(--on-brown);font-size:.84rem;text-align:center;padding:.5rem 1rem}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .row{display:flex;align-items:center;gap:1rem;min-height:64px}
+.logo{position:relative;font:700 2rem/1 var(--hand);text-decoration:none;color:var(--ink);padding:.1rem .7rem;isolation:isolate}
+.logo::before,.logo::after{content:"";position:absolute;z-index:-1;top:.05rem;bottom:.05rem;width:.55rem;background:var(--blush);transform:skewX(-18deg);border-radius:3px}
+.logo::before{left:.15rem}.logo::after{right:.1rem;width:.8rem;opacity:.8}
+nav.main{display:flex;gap:1.4rem;margin-left:auto}
+nav.main a{text-decoration:none;font-weight:500;font-size:.95rem}
+nav.main a:hover{text-decoration:underline;text-underline-offset:5px}
+.iconbtn{position:relative;display:inline-flex;align-items:center;gap:.4rem;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;min-height:44px;padding:0 1rem;font-weight:700}
+.count{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:999px;background:var(--brown);color:var(--on-brown);font-size:.78rem}
+.hero{padding-block:2.2rem 3rem;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:2rem;align-items:center}
+.hero h1{font-size:clamp(2.4rem,6.6vw,4.7rem);margin:.7rem 0 1rem}
+.hero h1 em{font-style:italic;color:var(--pink)}
+.hero p.lead{font-size:1.1rem;color:var(--muted);max-width:34rem}
+.cta{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.6rem}
+.arch{position:relative;justify-self:center;width:min(100%,430px)}
+.arch .strokes i{position:absolute;top:-4%;bottom:-4%;width:20%;background:var(--blush);transform:skewX(-14deg);border-radius:6px}
+.arch .strokes i:nth-child(1){left:-6%}.arch .strokes i:nth-child(2){left:20%;opacity:.7}.arch .strokes i:nth-child(3){right:-6%;width:26%;opacity:.9}
+.frame{position:relative;aspect-ratio:4/5;border-radius:999px 999px 28px 28px;overflow:hidden;background:var(--blush);box-shadow:0 20px 50px -24px var(--shade)}
+.frame img,.frame video{width:100%;height:100%;object-fit:cover;display:block}
+.tag{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--surface);color:var(--ink);border-radius:999px;padding:.35rem .9rem;font-size:.82rem;font-weight:700;white-space:nowrap;box-shadow:0 6px 18px -8px var(--shade)}
+.trust{border-block:1px solid var(--line);background:var(--surface)}
+.trust ul{list-style:none;margin:0;padding:1rem 0;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.trust li{font-size:.9rem;display:flex;flex-direction:column}
+.trust b{font-weight:700}.trust span{color:var(--muted)}
+section.block{padding-block:3.4rem}
+.head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:1rem;margin-bottom:1.4rem}
+.head h2{font-size:clamp(1.9rem,4.5vw,2.9rem)}
+.filters{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:1.4rem}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;min-height:40px;padding:0 1rem;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--brown);border-color:var(--brown);color:var(--on-brown)}
+.filters .sp{flex:1}
+select.chip{padding-right:.6rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:1.4rem 1.1rem}
+@media(max-width:620px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:1.1rem .75rem}}
+.card{display:flex;flex-direction:column;gap:.55rem;text-align:left;background:none;border:0;padding:0;min-width:0}
+.card .ph{position:relative;aspect-ratio:4/5;border-radius:18px;overflow:hidden;background:var(--blush)}
+.card .ph img,.card .ph video{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.card:hover .ph img{transform:scale(1.04)}
+.badges{position:absolute;left:8px;top:8px;display:flex;flex-direction:column;gap:5px;align-items:flex-start}
+.badge{font-size:.72rem;font-weight:700;border-radius:999px;padding:.2rem .6rem;background:var(--surface);color:var(--ink)}
+.badge.few{background:var(--warn);color:#fff}.badge.out{background:var(--ink);color:var(--bg)}
+.card h3{font-family:var(--sans);font-size:1rem;font-weight:700;line-height:1.3}
+.card .meta{display:flex;justify-content:space-between;align-items:center;gap:.5rem;color:var(--muted);font-size:.92rem}
+.dots{display:flex;gap:4px}.dots i{width:14px;height:14px;border-radius:50%;border:1px solid var(--line);display:block}
+.sample{position:absolute;right:8px;bottom:8px;font-size:.68rem;background:var(--shade);color:#fff;border-radius:6px;padding:.1rem .45rem}
+.note{background:var(--blush);border-radius:14px;padding:.8rem 1rem;font-size:.92rem;margin-bottom:1.2rem}
+.about .wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:2.4rem;align-items:start}
+.about p+p{margin-top:1rem}.about .big{font-family:var(--serif);font-size:1.5rem;line-height:1.3}
+.love-grid{columns:3 220px;column-gap:1rem}
+.love-grid figure{margin:0 0 1rem;break-inside:avoid;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--surface);position:relative}
+.love-grid img{width:100%;display:block}
+.empty-frame{display:grid;place-items:center;text-align:center;padding:2rem 1rem;min-height:190px;color:var(--muted);font-size:.92rem;border:1.5px dashed var(--pink);border-radius:16px;margin-bottom:1rem;break-inside:avoid}
+details{border-bottom:1px solid var(--line);padding:1rem 0}
+summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:1rem}
+summary::after{content:"+";font-size:1.3rem;line-height:1}details[open] summary::after{content:"–"}
+details p{margin-top:.6rem;color:var(--muted);max-width:44rem}
+.faq{max-width:50rem}
+.contact .wrap{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.contact dl{margin:1rem 0 0;display:grid;grid-template-columns:auto 1fr;gap:.6rem 1.2rem}
+.contact dt{color:var(--muted)}.contact dd{margin:0;word-break:break-word;user-select:all}
+footer{border-top:1px solid var(--line);padding-block:1.6rem 5.5rem;color:var(--muted);font-size:.88rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between}
+.fab{position:fixed;z-index:40;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--wa);color:#fff;border-radius:999px;min-height:52px;padding:0 1.2rem;display:flex;align-items:center;gap:.5rem;font-weight:700;text-decoration:none;box-shadow:0 12px 28px -10px var(--shade)}
+.scrim{position:fixed;inset:0;background:var(--shade);z-index:70;display:none}
+.scrim.on{display:block}
+.sheet{position:fixed;z-index:80;background:var(--bg);display:none;overflow:auto;overscroll-behavior:contain}
+.sheet.on{display:block}
+#pdp{inset:0;padding-top:env(safe-area-inset-top,0px)}
+@media(min-width:900px){#pdp{inset:4vh 4vw;border-radius:26px;padding-top:0;max-width:1100px;margin:0 auto}}
+#cart{max-width:680px}
+main{min-height:62vh}
+nav.main a[aria-current=page]{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px;text-decoration-color:var(--pink)}
+h1[tabindex="-1"]:focus{outline:none}
+#menuBtn{display:none}
+nav.mob{border-bottom:1px solid var(--line);background:var(--bg)}
+nav.mob .wrap{display:grid;padding-block:.4rem}
+nav.mob a{padding:.85rem 0;text-decoration:none;font-weight:500;border-bottom:1px solid var(--line)}
+nav.mob a:last-child{border:0}
+nav.mob a[aria-current=page]{color:var(--brown);font-weight:700}
+.pagehead{padding-block:2.4rem 0}
+.h2like{font:inherit;font-family:var(--serif);font-size:clamp(2rem,5vw,3.2rem);line-height:1.05;margin:.3rem 0 0;font-weight:600}
+#admin{min-height:60vh}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.8rem;margin-bottom:1.4rem}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:.9rem 1rem}
+.kpi span{display:block;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.kpi b{display:block;font-size:1.6rem;margin-top:.2rem;font-family:var(--serif)}
+.kpi.warn{border-color:var(--pink)}
+.bars{display:flex;align-items:flex-end;gap:4px;height:120px;margin:.6rem 0 .2rem}
+.bars i{flex:1;min-width:0;background:var(--pink);border-radius:4px 4px 0 0;min-height:2px}
+.barlab{display:flex;gap:4px;font-size:.68rem;color:var(--muted)}.barlab span{flex:1;text-align:center;min-width:0}
+.dash2{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}
+@media(max-width:800px){.dash2{grid-template-columns:1fr}}
+.search{max-width:320px;margin-bottom:.8rem}
+.pad{padding:1rem max(16px,env(safe-area-inset-right,0px)) 1.5rem max(16px,env(safe-area-inset-left,0px))}
+.shead{position:sticky;top:0;background:var(--bg);z-index:3;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.8rem max(16px,env(safe-area-inset-right,0px)) .8rem max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line)}
+.x{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);font-size:1.3rem;line-height:1}
+.pdp{display:grid;grid-template-columns:1.05fr .95fr;gap:2rem}
+.gal .main{aspect-ratio:4/5;border-radius:20px;overflow:hidden;background:var(--blush);position:relative}
+.gal .main img,.gal .main video{width:100%;height:100%;object-fit:cover;display:block;background:#000}
+.thumbs{display:flex;gap:.5rem;margin-top:.6rem;overflow-x:auto;padding-bottom:4px}
+.thumbs button{flex:0 0 64px;height:80px;border-radius:12px;overflow:hidden;border:2px solid transparent;padding:0;background:var(--blush);position:relative}
+.thumbs button[aria-current="true"]{border-color:var(--brown)}
+.thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.play{position:absolute;inset:0;display:grid;place-items:center;color:#fff;background:rgba(0,0,0,.28);font-size:1.1rem}
+.price{font-size:1.5rem;font-weight:700;margin:.4rem 0}
+.lbl{font-weight:700;font-size:.9rem;margin:1.1rem 0 .5rem;display:flex;justify-content:space-between}
+.sw{display:flex;flex-wrap:wrap;gap:.6rem}
+.sw button{display:flex;align-items:center;gap:.45rem;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:.3rem .8rem .3rem .35rem;min-height:40px}
+.sw button i{width:24px;height:24px;border-radius:50%;border:1px solid var(--line)}
+.sw button[aria-pressed="true"]{border-color:var(--brown);box-shadow:0 0 0 1.5px var(--brown)}
+.sizes{display:flex;flex-wrap:wrap;gap:.5rem}
+.sizes button{min-width:56px;min-height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-weight:700;padding:0 .8rem}
+.sizes button[aria-pressed="true"]{background:var(--brown);color:var(--on-brown);border-color:var(--brown)}
+.sizes button[disabled]{opacity:.4;text-decoration:line-through;cursor:not-allowed}
+.stock{font-weight:700;font-size:.92rem;display:flex;align-items:center;gap:.4rem}
+.stock::before{content:"";width:9px;height:9px;border-radius:50%;background:currentColor}
+.ok{color:var(--ok)}.few{color:var(--warn)}.out{color:var(--crit)}
+.qty{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:999px;background:var(--surface)}
+.qty button{width:42px;height:42px;border:0;background:none;font-size:1.2rem}
+.qty span{min-width:28px;text-align:center;font-weight:700}
+.buy{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.2rem}
+.buy .btn{flex:1 1 180px}
+.facts{margin:1.2rem 0 0;padding:0;list-style:none;display:grid;gap:.5rem;color:var(--muted);font-size:.92rem}
+.stars{color:#d98b00;letter-spacing:2px}
+.rev{border-top:1px solid var(--line);padding:.9rem 0}
+.rev b{display:block}.rev small{color:var(--muted)}
+.field{display:grid;gap:.3rem;margin-bottom:.8rem}
+.field label{font-size:.85rem;font-weight:700}
+.field input,.field select,.field textarea{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:.65rem .8rem;min-height:46px;width:100%;min-width:0}
+.field textarea{min-height:90px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.line{display:grid;grid-template-columns:64px 1fr auto;gap:.8rem;padding:.9rem 0;border-bottom:1px solid var(--line);align-items:center}
+.line img{width:64px;height:80px;object-fit:cover;border-radius:10px;display:block}
+.line small{color:var(--muted);display:block}
+.err{color:var(--crit);font-size:.88rem;margin:.4rem 0}
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap}
+.tbl{width:100%;border-collapse:collapse;font-size:.92rem}
+.tbl th,.tbl td{text-align:left;padding:.6rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+.scroll{overflow-x:auto}
+.pill{display:inline-block;border-radius:999px;padding:.1rem .6rem;font-size:.78rem;font-weight:700;background:var(--blush)}
+.stockgrid{display:grid;grid-template-columns:auto repeat(var(--n,1),minmax(64px,1fr));gap:.4rem;align-items:center;overflow-x:auto}
+.stockgrid input{min-height:40px;text-align:center;padding:.3rem}
+.up{display:flex;flex-wrap:wrap;gap:.6rem;margin:.5rem 0}
+.up .m{width:110px}.up .m .t{position:relative;aspect-ratio:4/5;border-radius:10px;overflow:hidden;background:var(--blush)}
+.up .m img,.up .m video{width:100%;height:100%;object-fit:cover}
+.up .m select,.up .m button{width:100%;margin-top:4px;min-height:34px;font-size:.82rem}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:.7rem 1.1rem;border-radius:999px;z-index:100;font-weight:500;max-width:92vw}
+@media(max-width:900px){
+  .hero .wrap,.about .wrap,.contact .wrap,.pdp{grid-template-columns:1fr}
+  .trust ul{grid-template-columns:1fr 1fr}
+  nav.main{display:none}
+  #menuBtn{display:inline-flex}
+  #ownerBtn,#loginBtn{display:none}
+  .top .row{justify-content:space-between}
+  .hero{padding-top:1.4rem}
+}
+@media(max-width:480px){.two{grid-template-columns:1fr}.btn{padding:0 1rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+.paym{border:0;padding:0;margin:.4rem 0 1rem;display:grid;gap:.55rem}.paym label{display:flex;gap:.55rem;align-items:flex-start;font-size:.95rem}.paym input{margin-top:.2rem}
+.trk h3{font-size:1.5rem;margin:1.2rem 0 .4rem}.trk .row{display:flex;justify-content:space-between;gap:1rem;padding:.35rem 0;border-bottom:1px solid var(--line)}
+</style>
+</head><body>
+
+<div class="bar">Delivered across Nigeria from Kaduna &nbsp;·&nbsp; Open 6am to 9pm</div>
+<header class="top"><div class="wrap row">
+  <a class="logo" href="#/" aria-label="X and O home">X·O</a>
+  <nav class="main" aria-label="Pages"><a href="#/shop">Shop</a><a href="#/about">About</a><a href="#/love">Customer love</a><a href="#/help">Delivery and returns</a><a href="#/contact">Contact</a></nav>
+  <div style="display:flex;gap:.5rem;align-items:center">
+    <a class="iconbtn" id="loginBtn" href="#/admin" style="text-decoration:none">Owner login</a>
+    <button class="iconbtn" id="ownerBtn" data-act="admin" hidden>Dashboard</button>
+    <button class="iconbtn" id="menuBtn" data-act="menu" aria-expanded="false" aria-controls="mobnav">Menu</button>
+    <button class="iconbtn" data-act="cart" aria-label="Open cart">Cart <span class="count" id="cartCount">0</span></button>
+  </div>
+</div></header>
+<nav class="mob" id="mobnav" aria-label="Pages" hidden><div class="wrap"><a href="#/">Home</a><a href="#/shop">Shop</a><a href="#/about">About</a><a href="#/love">Customer love</a><a href="#/help">Delivery and returns</a><a href="#/contact">Contact</a><a href="#/privacy">Privacy and terms</a><a href="#/admin" id="mobDash"><b>Owner login</b></a></div></nav>
+
+<main id="top">
+<div data-view="home">
+<section class="hero"><div class="wrap">
+  <div>
+    <span class="eyebrow">Modest wear from Kaduna</span>
+    <h1>Looking good and staying modest go <em>hand in hand.</em></h1>
+    <p class="lead">Jilbabs and hijabs chosen for comfort, quality and elegance, for everyday and for special occasions.</p>
+    <div class="cta"><a class="btn" href="#/shop">Shop the collection</a><a class="btn ghost" id="heroWa" target="_blank" rel="noopener" href="#">Ask us on WhatsApp</a></div>
+  </div>
+  <div class="arch"><div class="strokes" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="frame" id="heroFrame"></div></div>
+</div></section>
+
+<div class="trust"><div class="wrap"><ul>
+  <li><b>Nationwide delivery</b><span>Customer pays the courier fee</span></li>
+  <li><b>Prices on the site</b><span>No need to ask first</span></li>
+  <li><b>Return or exchange</b><span>Within 2 weeks</span></li>
+  <li><b>Pay by bank transfer</b><span>Details sent on WhatsApp</span></li>
+</ul></div></div>
+
+<section class="block" id="featured"><div class="wrap">
+  <div class="head"><div><span class="eyebrow">New in</span><h2>Fresh from the collection</h2></div><a class="btn ghost" href="#/shop">See everything</a></div>
+  <div class="grid" id="homeGrid"></div>
+</div></section>
+</div>
+
+<section class="block" data-view="shop" hidden id="shop"><div class="wrap">
+  <div class="head"><div><span class="eyebrow">The collection</span><h1 class="h2like">Shop jilbabs and hijabs</h1></div></div>
+  <div id="ownerNote"></div>
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid" aria-live="polite"></div>
+</div></section>
+
+<section class="block about" data-view="about" hidden id="about" style="background:var(--surface);border-block:1px solid var(--line)"><div class="wrap">
+  <div><span class="eyebrow">About us</span><h1 style="font-size:clamp(2rem,5vw,3.2rem);margin-top:.5rem">Modesty meets comfort, quality and effortless elegance.</h1></div>
+  <div>
+    <p class="big">At X and O, we believe that looking good while staying modest should always go hand in hand.</p>
+    <p>We are a Kaduna based modest wear brand dedicated to providing beautiful, quality jilbabs and hijabs that combine comfort, elegance and modesty. Modest fashion is more than what you wear. It is about feeling confident, comfortable and effortlessly beautiful.</p>
+    <p>Our goal is to make finding the perfect jilbab or hijab an enjoyable and stress free experience, with carefully selected pieces for different tastes and occasions. Whether you are dressing for everyday activities, special occasions or simply embracing your modest style, we are here to make it easier.</p>
+    <p>Based in Kaduna, we proudly serve customers across Nigeria with convenient nationwide delivery. Welcome to X and O.</p>
+  </div>
+</div></section>
+
+<section class="block" data-view="love" hidden id="love"><div class="wrap">
+  <div class="head"><div><span class="eyebrow">Customer love</span><h1 class="h2like">What our customers say</h1></div><div id="loveTools"></div></div>
+  <div class="love-grid" id="loveGrid"></div>
+</div></section>
+
+<section class="block" data-view="help" hidden id="help" style="background:var(--surface);border-block:1px solid var(--line)"><div class="wrap">
+  <div class="head"><div><span class="eyebrow">Good to know</span><h1 class="h2like">Delivery, payment and returns</h1></div></div>
+  <div class="faq">
+    <details open><summary>How does delivery work?</summary><p>We work with a delivery company and ship across Nigeria. The courier fee is paid by you and depends on your state. Message us on WhatsApp for your exact fee and delivery time.</p></details>
+    <details><summary>How do I pay?</summary><p>By bank transfer. After you send your order we reply with our account details. Share your transfer receipt in the chat and we confirm your order.</p></details>
+    <details><summary>Will the colour match the photos?</summary><p>We show each colour on its own photos and videos. Screens vary a little, so ask us for a live photo or video of the exact piece before you pay.</p></details>
+    <details><summary>Can I return or exchange something?</summary><p>Yes. Returns and exchanges are accepted within 2 weeks of delivery.</p></details>
+    <details><summary>Are light colours see-through?</summary><p>Lighter fabrics can look slightly sheer in pale colours. Wear an inner layer, and check the fabric note on each product.</p></details>
+  </div>
+</div></section>
+
+<section class="block contact" data-view="contact" hidden id="contact"><div class="wrap">
+  <div><span class="eyebrow">Talk to us</span><h1 style="font-size:clamp(1.9rem,4.5vw,2.9rem);margin:.5rem 0 1rem">Order, ask or say hello</h1>
+    <p style="color:var(--muted);max-width:30rem">Send the product, colour and size you like and we will confirm stock, delivery fee and payment details.</p>
+    <div class="cta"><a class="btn wa" id="contactWa" target="_blank" rel="noopener" href="#">Chat on WhatsApp</a></div></div>
+  <dl>
+    <dt>WhatsApp</dt><dd>09093813119</dd>
+    <dt>Calls</dt><dd>09067278061</dd>
+    <dt>Email</dt><dd>Xno2022@gmail.com</dd>
+    <dt>Instagram</dt><dd><a href="https://www.instagram.com/xno.ng" target="_blank" rel="noopener">@xno.ng</a></dd>
+    <dt>TikTok</dt><dd><a href="https://www.tiktok.com/@xno.ng" target="_blank" rel="noopener">@xno.ng</a></dd>
+    <dt>Hours</dt><dd>6am to 9pm</dd>
+    <dt>Location</dt><dd>U/Rimi, Kaduna</dd>
+  </dl>
+</div></section>
+<section class="block" data-view="privacy" hidden id="legal"><div class="wrap">
+  <div class="head"><div><span class="eyebrow">The small print</span><h1 class="h2like">Privacy and terms</h1></div></div>
+  <div class="faq">
+    <details><summary>Privacy</summary><p>When you order we collect your name, WhatsApp number, state and delivery address. We use them only to confirm your order, arrange delivery with our courier and answer your questions. We do not sell your details. To see or delete your information, message us on WhatsApp. Your cart is kept on your own device.</p></details>
+    <details><summary>Terms of sale</summary><p>Prices are in naira. An order is confirmed once we receive your bank transfer. Delivery is by our partner courier and the courier fee is paid by the customer. Returns and exchanges are accepted within 2 weeks of delivery. Colours may look slightly different on your screen.</p></details>
+  </div>
+</div></section>
+<section class="block" data-view="admin" hidden><div class="wrap" id="admin"></div></section>
+<section class="block" data-view="cart" hidden><div class="wrap" id="cart"></div></section>
+</main>
+
+<footer><div class="wrap"><span>© X and O · Premium jilbabs and hijabs for every occasion</span><span><a href="#/shop">Shop</a> · <a href="#/about">About</a> · <a href="#/love">Customer love</a> · <a href="#/help">Delivery and returns</a> · <a href="#/contact">Contact</a> · <a href="#/privacy">Privacy and terms</a><span id="ownLogin"> · <a href="#/admin">Owner login</a></span></span></div></footer>
+
+<a class="fab" id="fab" target="_blank" rel="noopener" href="#" aria-label="Chat on WhatsApp">Chat with us</a>
+
+<div class="scrim" id="scrim" data-act="closeall"></div>
+<div class="sheet" id="pdp" role="dialog" aria-modal="true" aria-label="Product"></div>
+<div id="toastBox"></div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="backend.js"></script>
+<script>
+const BE=window.XO_BE||null;
+const WA=(window.XO_CONFIG&&XO_CONFIG.whatsapp)||'2349093813119';
+const STATES=['Abia','Adamawa','Akwa Ibom','Anambra','Bauchi','Bayelsa','Benue','Borno','Cross River','Delta','Ebonyi','Edo','Ekiti','Enugu','FCT Abuja','Gombe','Imo','Jigawa','Kaduna','Kano','Katsina','Kebbi','Kogi','Kwara','Lagos','Nasarawa','Niger','Ogun','Ondo','Osun','Oyo','Plateau','Rivers','Sokoto','Taraba','Yobe','Zamfara'];
+const NAMED={black:'#231c1c',white:'#f6f1ef',cream:'#eadcc8',pink:'#e8a1b5',blush:'#f2c9d2',orange:'#e0762f',burgundy:'#7a1f2b',red:'#a8232f',brown:'#6b4030',navy:'#1f2a44',green:'#2f5d46',grey:'#8b8585',lilac:'#b9a3d0',beige:'#cdb89b'};
+const LOW=5;
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const naira=n=>'₦'+Number(n||0).toLocaleString('en-NG');
+const safe=u=>typeof u==='string'&&(u.startsWith('/_blob/')||u.startsWith('https://')||u.startsWith('data:image/'))?u:'';
+const wa=t=>'https://wa.me/'+WA+(t?'?text='+encodeURIComponent(t):'');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- fabric art used until real photos are uploaded ---------- */
+function hexN(h){h=h.replace('#','');return[0,2,4].map(i=>parseInt(h.substr(i,2),16))}
+function mix(h,to,t){const a=hexN(h),b=hexN(to);return'#'+a.map((v,i)=>Math.round(v+(b[i]-v)*t).toString(16).padStart(2,'0')).join('')}
+const artCache={};
+function art(hex){hex=/^#[0-9a-f]{6}$/i.test(hex)?hex:'#e8a1b5';if(artCache[hex])return artCache[hex];
+  const l=mix(hex,'#ffffff',.38),d=mix(hex,'#000000',.3);
+  const s="<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='"+l+"'/><stop offset='1' stop-color='"+d+"'/></linearGradient></defs><rect width='400' height='500' fill='url(#g)'/>"
+   +"<path d='M40 0C-10 170 90 330 30 500H110C170 330 70 170 130 0Z' fill='#fff' opacity='.11'/>"
+   +"<path d='M150 0C110 180 200 320 150 500H215C270 320 180 180 230 0Z' fill='#000' opacity='.09'/>"
+   +"<path d='M250 0C220 160 300 340 260 500H330C380 340 300 160 340 0Z' fill='#fff' opacity='.13'/>"
+   +"<path d='M330 0C310 200 380 330 360 500H400V0Z' fill='#000' opacity='.12'/></svg>";
+  return artCache[hex]='data:image/svg+xml;utf8,'+encodeURIComponent(s)}
+function parseColours(t){return String(t||'').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const m=l.match(/#[0-9a-f]{6}/i);const name=l.replace(/#[0-9a-f]{6}/i,'').trim()||'Colour';return{name,hex:m?m[0]:(NAMED[name.toLowerCase()]||'#d9a1b0')}})}
+
+/* ---------- sample catalogue, shown only while no real products exist ---------- */
+const DEMO=[
+ {id:'demo-1',name:'Classic Egyptian Jilbab',category:'Jilbab',origin:'Egypt',price:34000,fabric:'Light, flowing fabric. Pale colours can look slightly see-through, so wear an inner layer.',desc:'A full-length jilbab with a relaxed fit for everyday and special occasions.',colours:[{name:'Orange',hex:'#e0762f'},{name:'Black',hex:'#231c1c'},{name:'Burgundy',hex:'#7a1f2b'}],sizes:['54','56','58','60'],stock:{'Orange|54':3,'Orange|56':6,'Orange|58':2,'Orange|60':0,'Black|54':9,'Black|56':12,'Black|58':7,'Black|60':4,'Burgundy|54':0,'Burgundy|56':2,'Burgundy|58':5,'Burgundy|60':1},media:[],sample:true},
+ {id:'demo-2',name:'Everyday Jersey Hijab',category:'Hijab',origin:'Nigeria',price:6500,fabric:'Soft stretch jersey that stays in place. Easy to wash.',desc:'A comfortable everyday hijab made in Nigeria.',colours:[{name:'Pink',hex:'#e8a1b5'},{name:'Cream',hex:'#eadcc8'},{name:'Brown',hex:'#6b4030'},{name:'Black',hex:'#231c1c'}],sizes:['Standard'],stock:{'Pink|Standard':14,'Cream|Standard':3,'Brown|Standard':8,'Black|Standard':20},media:[],sample:true},
+ {id:'demo-3',name:'Prayer Hijab Set',category:'Prayer hijab',origin:'Nigeria',price:22000,fabric:'Breathable lightweight fabric made for comfort during prayer.',desc:'A ready-to-wear prayer hijab you slip on in seconds.',colours:[{name:'White',hex:'#f6f1ef'},{name:'Lilac',hex:'#b9a3d0'},{name:'Navy',hex:'#1f2a44'}],sizes:['Standard'],stock:{'White|Standard':5,'Lilac|Standard':0,'Navy|Standard':11},media:[],sample:true}
+];
+
+/* ---------- state ---------- */
+const S={db:null,assets:null,canEdit:false,live:false,products:[],reviews:[],orders:[],shots:[],cat:'All',origin:'All',sort:'new',
+  cart:[],sel:null,adminTab:'overview',form:null,ready:false,dlv:{},pay:{}};
+try{S.cart=JSON.parse(localStorage.getItem('xo-cart')||'[]')||[]}catch(e){S.cart=[]}
+const saveCart=()=>{try{localStorage.setItem('xo-cart',JSON.stringify(S.cart))}catch(e){}};
+const catalogue=()=>(S.products.length||BE?S.products:DEMO).filter(p=>p.active!==false);
+const byId=id=>catalogue().find(p=>p.id===id);
+const qty=(p,c,s)=>Number((p.stock||{})[c+'|'+s])||0;
+const total=p=>Object.values(p.stock||{}).reduce((a,b)=>a+(Number(b)||0),0);
+const cols=p=>(p.colours&&p.colours.length?p.colours:[{name:'Default',hex:'#e8a1b5'}]).map(c=>({name:String(c.name),hex:/^#[0-9a-f]{6}$/i.test(c.hex)?c.hex:'#d9a1b0'}));
+const sizes=p=>(p.sizes&&p.sizes.length?p.sizes:['Standard']);
+function toast(t){const b=$('#toastBox');b.innerHTML='<div class="toast" role="status">'+esc(t)+'</div>';clearTimeout(toast.t);toast.t=setTimeout(()=>b.innerHTML='',3200)}
+function mediaFor(p,colour){
+  const all=(p.media||[]).filter(m=>safe(m.url));
+  const m=all.filter(x=>!x.colour||x.colour===colour);
+  if(m.length)return m;
+  const c=cols(p).find(x=>x.name===colour)||cols(p)[0];
+  return[{type:'art',url:art(c.hex)}]}
+function coverFor(p){const c=cols(p)[0];const all=(p.media||[]).filter(m=>safe(m.url));
+  const img=all.find(m=>m.type==='image'),vid=all.find(m=>m.type==='video');
+  return{img:img?img.url:art(c.hex),vid:vid?vid.url:''}}
+const avg=pid=>{const r=S.reviews.filter(x=>x.productId===pid&&x.approved);return r.length?{n:r.length,a:r.reduce((s,x)=>s+(+x.stars||0),0)/r.length}:null};
+
+/* ---------- shop ---------- */
+function renderHero(){
+  const p=catalogue()[0]||{name:'X and O',price:0,colours:[],media:[]};const cv=coverFor(p);
+  const media=cv.vid&&!reduce?'<video src="'+esc(safe(cv.vid))+'" poster="'+esc(safe(cv.img))+'" muted loop playsinline autoplay></video>':'<img src="'+esc(safe(cv.img))+'" alt="'+esc(p.name)+'">';
+  $('#heroFrame').innerHTML=media+'<span class="tag">'+esc(p.name)+(p.price?' · '+naira(p.price):'')+'</span>'}
+function renderFilters(){
+  const cats=['All',...new Set(catalogue().map(p=>p.category).filter(Boolean))];
+  const origins=['All',...new Set(catalogue().map(p=>p.origin).filter(Boolean))];
+  $('#filters').innerHTML=cats.map(c=>'<button class="chip" data-act="cat" data-v="'+esc(c)+'" aria-pressed="'+(S.cat===c)+'">'+esc(c)+'</button>').join('')
+   +'<span class="sp"></span>'
+   +origins.map(o=>'<button class="chip" data-act="origin" data-v="'+esc(o)+'" aria-pressed="'+(S.origin===o)+'">'+(o==='All'?'Any origin':'Made in '+esc(o))+'</button>').join('')
+   +'<label class="sr" style="display:contents"><select class="chip" id="sort" aria-label="Sort"><option value="new"'+(S.sort==='new'?' selected':'')+'>Newest</option><option value="lo"'+(S.sort==='lo'?' selected':'')+'>Price low to high</option><option value="hi"'+(S.sort==='hi'?' selected':'')+'>Price high to low</option></select></label>'}
+function renderGrid(){
+  let list=catalogue().filter(p=>(S.cat==='All'||p.category===S.cat)&&(S.origin==='All'||p.origin===S.origin));
+  if(S.sort==='lo')list=[...list].sort((a,b)=>a.price-b.price);if(S.sort==='hi')list=[...list].sort((a,b)=>b.price-a.price);
+  $('#ownerNote').innerHTML=!S.products.length?'<div class="note">'+(BE?(S.canEdit?'No products yet. Open <b>Owner tools</b> and add your first product with photos and video.':'The new collection is being added. Message us on WhatsApp to ask what is available.'):(S.canEdit?'These are sample products. Open <b>Owner tools</b> and add your first product with photos and video to replace them.':'Sample products shown. The real collection is being added.'))+'</div>':'';
+  if(!list.length){$('#grid').innerHTML='<p style="grid-column:1/-1;color:var(--muted)">Nothing matches these filters yet. Try another category, or message us on WhatsApp.</p>';return}
+  $('#grid').innerHTML=list.map(cardOf).join('');
+  watchVideos()}
+function cardOf(p){const cv=coverFor(p),t=total(p),r=avg(p.id);
+    const vid=cv.vid&&!reduce?'<video data-lazyvid src="'+esc(safe(cv.vid))+'" poster="'+esc(safe(cv.img))+'" muted loop playsinline preload="metadata"></video>':'<img loading="lazy" src="'+esc(safe(cv.img))+'" alt="'+esc(p.name)+'">';
+    return'<button class="card" data-act="open" data-id="'+esc(p.id)+'" aria-label="'+esc(p.name+', '+naira(p.price))+'"><div class="ph">'+vid
+     +'<div class="badges">'+(t===0?'<span class="badge out">Sold out</span>':t<=LOW*2?'<span class="badge few">Few left</span>':'')+(p.origin?'<span class="badge">Made in '+esc(p.origin)+'</span>':'')+'</div>'
+     +(p.sample?'<span class="sample">Sample</span>':'')+'</div>'
+     +'<h3>'+esc(p.name)+'</h3><div class="meta"><span>'+(p.price?naira(p.price):'')+(r?' · <span class="stars">★</span> '+r.a.toFixed(1):'')+'</span><span class="dots">'+cols(p).slice(0,5).map(c=>'<i style="background:'+esc(c.hex)+'"></i>').join('')+'</span></div></button>'}
+function renderHome(){const l=catalogue().slice(0,4);$('#homeGrid').innerHTML=l.length?l.map(cardOf).join(''):'<p style="grid-column:1/-1;color:var(--muted)">The new collection is being added. Message us on WhatsApp to ask what is available.</p>';watchVideos()}
+let io;function watchVideos(){if(io)io.disconnect();if(!('IntersectionObserver'in window))return;
+  io=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;if(e.isIntersecting){v.play().catch(()=>{})}else v.pause()}),{threshold:.4});
+  document.querySelectorAll('[data-lazyvid]').forEach(v=>io.observe(v))}
+
+/* ---------- product sheet ---------- */
+function openProduct(id){const p=byId(id);if(!p)return;
+  const c=cols(p).find(x=>qtyAny(p,x.name))||cols(p)[0];
+  S.sel={id,colour:c.name,size:'',n:1,idx:0,rev:false};
+  const s=sizes(p).find(z=>qty(p,c.name,z)>0);if(s)S.sel.size=s;
+  renderPdp();show('pdp')}
+const qtyAny=(p,c)=>sizes(p).reduce((a,s)=>a+qty(p,c,s),0);
+function renderPdp(){const p=byId(S.sel.id);if(!p){hideAll();return}
+  const sel=S.sel,ms=mediaFor(p,sel.colour);if(sel.idx>=ms.length)sel.idx=0;const cur=ms[sel.idx];
+  const left=sel.size?qty(p,sel.colour,sel.size):0;
+  const stockTxt=!sel.size?'Choose a size':left===0?'Sold out in this size':left<=LOW?'Only '+left+' left':'In stock ('+left+' available)';
+  const cls=!sel.size?'':left===0?'out':left<=LOW?'few':'ok';
+  const rv=S.reviews.filter(x=>x.productId===p.id&&x.approved),a=avg(p.id);
+  const main=cur.type==='video'?'<video src="'+esc(safe(cur.url))+'" controls playsinline muted loop autoplay></video>':'<img src="'+esc(safe(cur.url))+'" alt="'+esc(p.name+' in '+sel.colour)+'">';
+  const waMsg='Hello X and O, I am interested in '+p.name+' ('+sel.colour+(sel.size?', size '+sel.size:'')+'). Is it available?';
+  $('#pdp').innerHTML='<div class="shead"><b style="font-family:var(--serif);font-size:1.3rem">'+esc(p.name)+'</b><button class="x" data-act="closeall" aria-label="Close">×</button></div><div class="pad"><div class="pdp">'
+   +'<div class="gal"><div class="main">'+main+(p.sample?'<span class="sample">Sample photo</span>':'')+'</div>'
+   +'<div class="thumbs">'+ms.map((m,i)=>'<button data-act="thumb" data-i="'+i+'" aria-current="'+(i===sel.idx)+'" aria-label="Media '+(i+1)+'">'+(m.type==='video'?'<span class="play">▶</span>':'<img src="'+esc(safe(m.url))+'" alt="">')+'</button>').join('')+'</div></div>'
+   +'<div><span class="eyebrow">'+esc(p.category||'')+(p.origin?' · Made in '+esc(p.origin):'')+'</span>'
+   +'<div class="price">'+naira(p.price)+'</div>'+(a?'<div><span class="stars">'+'★'.repeat(Math.round(a.a))+'</span> '+a.a.toFixed(1)+' · '+a.n+' review'+(a.n>1?'s':'')+'</div>':'')
+   +'<div class="lbl"><span>Colour: '+esc(sel.colour)+'</span></div><div class="sw">'+cols(p).map(c=>'<button data-act="colour" data-v="'+esc(c.name)+'" aria-pressed="'+(c.name===sel.colour)+'"><i style="background:'+esc(c.hex)+'"></i>'+esc(c.name)+(qtyAny(p,c.name)===0?' <small>(sold out)</small>':'')+'</button>').join('')+'</div>'
+   +'<div class="lbl"><span>Size</span></div><div class="sizes">'+sizes(p).map(z=>'<button data-act="size" data-v="'+esc(z)+'" aria-pressed="'+(z===sel.size)+'"'+(qty(p,sel.colour,z)===0?' disabled':'')+'>'+esc(z)+'</button>').join('')+'</div>'
+   +'<p class="stock '+cls+'" style="margin-top:.9rem" aria-live="polite">'+esc(stockTxt)+'</p>'
+   +'<div class="buy"><span class="qty"><button data-act="dec" aria-label="Fewer">−</button><span>'+sel.n+'</span><button data-act="inc" aria-label="More">+</button></span>'
+   +'<button class="btn" data-act="add"'+(left===0?' disabled':'')+'>Add to cart</button></div>'
+   +'<div class="buy" style="margin-top:.6rem"><a class="btn wa" target="_blank" rel="noopener" href="'+esc(wa(waMsg))+'">'+(left===0&&sel.size?'Notify me on WhatsApp':'Order on WhatsApp')+'</a></div>'
+   +'<ul class="facts"><li><b>Fabric.</b> '+esc(p.fabric||'Ask us about the fabric.')+'</li>'+(p.desc?'<li>'+esc(p.desc)+'</li>':'')+'<li><b>Delivery.</b> Across Nigeria. The courier fee is paid by you and confirmed on WhatsApp.</li><li><b>Returns.</b> Return or exchange within 2 weeks.</li><li>Screens differ a little, so colours may look slightly different.</li></ul></div></div>'
+   +'<div style="margin-top:2.2rem;max-width:42rem"><h3 style="font-size:1.8rem">Reviews</h3>'
+   +(rv.length?rv.map(r=>'<div class="rev"><span class="stars">'+'★'.repeat(+r.stars||0)+'</span><b>'+esc(r.name||'Customer')+'</b><p>'+esc(r.text)+'</p></div>').join(''):'<p style="color:var(--muted);margin:.5rem 0 1rem">No reviews yet. Bought this? Be the first to share how it fits.</p>')
+   +'<form id="revForm" style="margin-top:1rem"><div class="two"><div class="field"><label for="rvName">Your name</label><input id="rvName" required maxlength="40"></div>'
+   +'<div class="field"><label for="rvStars">Rating</label><select id="rvStars"><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></div></div>'
+   +'<div class="field"><label for="rvText">Your review</label><textarea id="rvText" required maxlength="500" placeholder="How was the fit, fabric and colour?"></textarea></div>'
+   +'<button class="btn sm" type="submit">Post review</button><div id="rvMsg" role="status"></div></form></div></div>';
+  if(BE){const f=$('#revForm');if(f)f.outerHTML='<p style="color:var(--muted);margin-top:1rem">Reviews come from customers who have received their order. After delivery, open your order link to leave one.</p>'}
+  $('#pdp').scrollTop=$('#pdp').scrollTop}
+function add(){const p=byId(S.sel.id),{colour,size,n}=S.sel;if(!size)return toast('Choose a size first');
+  const left=qty(p,colour,size);const ex=S.cart.find(l=>l.pid===p.id&&l.colour===colour&&l.size===size);
+  const want=(ex?ex.n:0)+n;if(want>left)return toast('Only '+left+' available in this size');
+  if(ex)ex.n=want;else S.cart.push({pid:p.id,name:p.name,colour,size,n,price:p.price,img:coverFor(p).img});
+  saveCart();renderCartCount();toast('Added to cart');}
+function renderCartCount(){$('#cartCount').textContent=S.cart.reduce((a,l)=>a+l.n,0)}
+
+/* ---------- cart and order ---------- */
+const sub=()=>S.cart.reduce((a,l)=>a+l.n*l.price,0);
+const NEXT={new:['paid','Payment received'],paid:['shipped','Mark shipped'],shipped:['delivered','Mark delivered']};
+if(BE)Object.assign(NEXT,{awaiting_payment:['paid','Payment received'],paid:['packed','Mark packed'],packed:['shipped','Mark shipped'],shipped:['delivered','Mark delivered']});
+function waTo(phone,text){let d=String(phone||'').replace(/\D/g,'');if(d.startsWith('0'))d='234'+d.slice(1);return 'https://wa.me/'+d+'?text='+encodeURIComponent(text)}
+function dlvInfo(st){const d=S.dlv[st];return d&&(d.fee||d.days)?d:null}
+function est(st){const d=dlvInfo(st);return d&&d.fee?', estimated courier fee '+naira(d.fee):''}
+function dlvNote(f){const n=$('#dlvNote');if(!n)return;const d=dlvInfo(f.state);
+  n.textContent=!f.state?'':d?'Estimated courier fee to '+f.state+(d.fee?': '+naira(d.fee):'')+(d.days?' · about '+d.days+' day'+(d.days==1?'':'s'):'')+'. The courier confirms the final fee on WhatsApp.':'We confirm the courier fee for '+f.state+' on WhatsApp.'}
+function payBlock(){const p=S.pay||{};return p.number?'<div class="note" style="margin-top:1rem"><b>Pay by bank transfer</b><br>'+esc(p.bank||'')+'<br>'+esc(p.name||'')+'<br><span style="user-select:all;font-weight:700;font-size:1.1rem">'+esc(p.number)+'</span><br><small>Send your order first, then share the transfer receipt in the WhatsApp chat.</small></div>':'<p style="color:var(--muted);font-size:.85rem;margin-top:.8rem">We reply with our bank account details. Pay by transfer and send the receipt in the chat.</p>'}
+const csv=rows=>rows.map(r=>r.map(v=>{v=String(v==null?'':v);if(/^[=+\-@]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'}).join(',')).join('\n');
+async function saveCsv(name,rows){if(!(window.claude&&window.claude.use)){const b=new Blob(['\ufeff'+csv(rows)],{type:'text/csv'});const l=document.createElement('a');l.href=URL.createObjectURL(b);l.download=name;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(l.href),1500);toast('File ready');return}
+  try{const d=await window.claude.use('downloads');if(!d)return toast('Downloads are not available here');await d.save({filename:name,data:csv(rows)});toast('File ready')}catch(e){if(!e||e.code!=='declined')toast('Could not save the file')}}
+function orderText(f){return 'Hello X and O, I would like to order:\n'+S.cart.map((l,i)=>(i+1)+'. '+l.name+' ('+l.colour+', size '+l.size+') x'+l.n+' - '+naira(l.n*l.price)).join('\n')
+  +'\nItems total: '+naira(sub())+' (delivery fee not included'+est(f.state)+')\n\nName: '+f.name+'\nPhone: '+f.phone+'\nState: '+f.state+'\nAddress: '+f.addr}
+function renderCart(){const keep=cartForm();
+  $('#cart').innerHTML='<div class="head"><div><span class="eyebrow">Checkout</span><h1 class="h2like">Your cart</h1></div></div><div>'
+   +(S.cart.length?S.cart.map((l,i)=>'<div class="line"><img src="'+esc(safe(l.img))+'" alt=""><div><b>'+esc(l.name)+'</b><small>'+esc(l.colour)+' · size '+esc(l.size)+'</small><span class="qty" style="margin-top:.3rem"><button data-act="cdec" data-i="'+i+'" aria-label="Fewer">−</button><span>'+l.n+'</span><button data-act="cinc" data-i="'+i+'" aria-label="More">+</button></span></div><div style="text-align:right"><b>'+naira(l.n*l.price)+'</b><br><button class="btn sm ghost" style="margin-top:.4rem" data-act="crm" data-i="'+i+'">Remove</button></div></div>').join('')
+    +'<p style="display:flex;justify-content:space-between;margin:1rem 0 .2rem"><span>Items total</span><b>'+naira(sub())+'</b></p><p style="color:var(--muted);font-size:.88rem;margin-bottom:1rem">Delivery fee is paid to our courier and confirmed on WhatsApp.</p>'
+    +'<div class="field"><label for="cName">Full name</label><input id="cName" autocomplete="name" value="'+esc(keep.name)+'"></div>'
+    +'<div class="field"><label for="cPhone">WhatsApp number</label><input id="cPhone" inputmode="tel" autocomplete="tel" value="'+esc(keep.phone)+'"></div>'
+    +'<div class="field"><label for="cState">State</label><select id="cState"><option value="">Choose your state</option>'+STATES.map(s=>'<option'+(keep.state===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div>'
+    +'<p id="dlvNote" style="color:var(--muted);font-size:.9rem;margin:-.3rem 0 .8rem"></p>'
+    +'<div class="field"><label for="cAddr">Delivery address</label><textarea id="cAddr">'+esc(keep.addr)+'</textarea></div>'
+    +'<div class="err" id="cErr" role="alert"></div>'
+    +(BE?liveCheckout():'<a class="btn wa" id="sendOrder" style="width:100%" target="_blank" rel="noopener" href="#">Send order on WhatsApp</a>'+payBlock())
+   :'<p style="color:var(--muted);padding:2rem 0">Your cart is empty. Pick a piece you love and choose a colour and size.</p><a class="btn" href="#/shop">Browse the collection</a>')+'</div>';
+  syncOrderLink()}
+function cartForm(){const g=id=>{const e=$('#'+id);return e?e.value:''};return{email:g('cEmail')||S.f?.email||'',name:g('cName')||S.f?.name||'',phone:g('cPhone')||S.f?.phone||'',state:g('cState')||S.f?.state||'',addr:g('cAddr')||S.f?.addr||''}}
+function syncOrderLink(){const a=$('#sendOrder');if(!a){if(BE&&$('#cState')){const f=cartForm();S.f=f;dlvNote(f)}return}const f=cartForm();S.f=f;dlvNote(f);a.href=wa(orderText({name:f.name||'-',phone:f.phone||'-',state:f.state||'-',addr:f.addr||'-'}))}
+function orderErr(e){const m=String((e&&e.message)||e||'');
+  if(/out_of_stock|unavailable/.test(m))return 'Sorry, someone just took the last piece. Please reduce the quantity or remove that item.';
+  if(/bad_phone/.test(m))return 'Please enter a valid phone number, for example 08030000000.';
+  if(/bad_name/.test(m))return 'Please enter your full name.';
+  if(/bad_address/.test(m))return 'Please enter a full delivery address.';
+  if(/bad_email/.test(m))return 'That email address does not look right.';
+  if(/fee_unknown/.test(m))return 'Card payment is not available for this state yet. Please choose bank transfer or WhatsApp.';
+  return 'We could not place the order. Check your connection and try again, or message us on WhatsApp.'}
+function liveCheckout(){const card=BE&&BE.cardEnabled;
+  return '<div class="field"><label for="cEmail">Email (needed for card payment)</label><input id="cEmail" type="email" autocomplete="email" value="'+esc((S.f&&S.f.email)||'')+'"></div>'
+   +'<fieldset class="paym"><legend class="lbl"><span>How would you like to pay?</span></legend>'
+   +'<label><input type="radio" name="pm" value="transfer" checked> Bank transfer. We hold your items for a few hours.</label>'
+   +(card?'<label><input type="radio" name="pm" value="paystack"> Pay now by card</label>':'')
+   +'<label><input type="radio" name="pm" value="whatsapp"> Arrange payment on WhatsApp</label></fieldset>'
+   +'<button class="btn" id="placeOrder" type="button" style="width:100%" data-act="place">Place order</button>'
+   +(localStorage.getItem('xo-last')?'<p style="margin-top:1rem"><a href="#" data-act="lastorder">View my last order</a></p>':'')}
+async function placeLive(){const f=cartForm(),err=$('#cErr'),btn=$('#placeOrder');err.textContent='';
+  if(!f.name.trim()||!f.phone.trim()||!f.state||!f.addr.trim()){err.textContent='Please fill in your name, WhatsApp number, state and address.';return}
+  const method=(document.querySelector('input[name=pm]:checked')||{}).value||'transfer';
+  if(method==='paystack'&&!/^\S+@\S+\.\S+$/.test(f.email||'')){err.textContent='Add your email address to pay by card.';return}
+  const items=[];for(const l of S.cart){const p=S.products.find(x=>x.id===l.pid);const v=p&&p.vid&&p.vid[l.colour+'|'+l.size];if(!v){err.textContent='An item in your cart is no longer available. Please remove it.';return}items.push({variant_id:v,qty:l.n})}
+  btn.disabled=true;btn.textContent='Placing order…';
+  try{const r=await BE.placeOrder(items,{name:f.name,phone:f.phone,email:f.email||'',state:f.state,address:f.addr},method);
+    S.cart=[];saveCart();renderCartCount();try{localStorage.setItem('xo-last',r.token)}catch(e){}
+    history.replaceState(null,'','#/order/'+r.token);refreshAll().catch(()=>{});await showTrack(r.token)}
+  catch(e){btn.disabled=false;btn.textContent='Place order';err.textContent=orderErr(e)}}
+const STATUS={awaiting_payment:'Waiting for payment',paid:'Payment received',packed:'Being packed',shipped:'On its way',delivered:'Delivered',cancelled:'Cancelled',expired:'Expired. The items were released.',needs_review:'Being checked by our team'};
+const trackHead='<div class="head"><div><span class="eyebrow">Order</span><h1 class="h2like">Your order</h1></div></div>';
+async function showTrack(token){const box=$('#cart');
+  if(!S.track||S.track.token!==token)box.innerHTML=trackHead+'<div class="pad"><p style="color:var(--muted)">Loading your order…</p></div>';
+  let o=null;try{o=await BE.getOrder(token)}catch(e){}
+  if(!o){box.innerHTML=trackHead+'<div class="pad"><p>We could not find this order. Check the link, or message us on WhatsApp.</p></div>';return}
+  S.track={token,o};renderTrack();
+  clearTimeout(showTrack.t);
+  if(o.status==='awaiting_payment'&&o.payment_method==='paystack')showTrack.t=setTimeout(()=>{if(CUR==='cart'&&location.hash.indexOf(token)>0&&S.track&&S.track.token===token&&!$('#cart').querySelector('input:focus'))showTrack(token)},5000)}
+function renderTrack(){const {token,o}=S.track,box=$('#cart');const b=o.bank||{};
+  const fee=o.delivery_fee_ngn===null||o.delivery_fee_ngn===undefined?'To be confirmed on WhatsApp':naira(o.delivery_fee_ngn);
+  const waMsg='Hello X and O, my order number is #'+o.order_no+'.';
+  let h=trackHead+'<div class="pad trk"><p class="eyebrow">Order #'+esc(o.order_no)+'</p><h3 style="margin-top:.2rem">'+esc(STATUS[o.status]||o.status)+'</h3>';
+  if(o.status==='awaiting_payment'&&o.expires_at)h+='<p style="color:var(--muted)">We are holding your items until '+esc(new Date(o.expires_at).toLocaleString('en-NG',{hour:'numeric',minute:'2-digit',day:'numeric',month:'short'}))+'.</p>';
+  if(o.status==='awaiting_payment'&&o.payment_method==='paystack')h+='<button class="btn" style="width:100%;margin:.8rem 0" data-act="paycard">Pay now by card</button><p style="color:var(--muted);font-size:.9rem">After paying you return here and this page updates by itself.</p>';
+  if(o.status==='awaiting_payment'&&o.payment_method!=='paystack'){
+    h+=(b.account_number?'<div class="note" style="margin:.8rem 0"><b>Pay by bank transfer</b><br>'+esc(b.bank||'')+'<br>'+esc(b.account_name||'')+'<br><span style="user-select:all;font-weight:700;font-size:1.1rem">'+esc(b.account_number)+'</span><br><b>Amount: '+naira(o.total_ngn)+'</b></div>':'<div class="note" style="margin:.8rem 0">We will send you our bank details on WhatsApp.</div>')
+     +'<label class="btn sm" for="recUp">Upload transfer receipt</label><input id="recUp" type="file" accept="image/*,application/pdf" hidden>'+(o.receipt_uploaded?' <span class="pill">Receipt received</span>':'')
+     +' <a class="btn sm wa" target="_blank" rel="noopener" href="'+esc(wa(waMsg+' I have sent the transfer.'))+'">Tell us on WhatsApp</a>'}
+  h+='<h3>Items</h3>'+(o.items||[]).map(i=>'<div class="row"><span>'+esc(i.name)+' ('+esc(i.colour)+', '+esc(i.size)+') × '+i.qty+'</span><b>'+naira(i.qty*i.unit_price_ngn)+'</b></div>').join('')
+   +'<div class="row"><span>Items total</span><b>'+naira(o.subtotal_ngn)+'</b></div><div class="row"><span>Delivery ('+esc(o.state)+')</span><b>'+esc(fee)+'</b></div><div class="row"><span>Total</span><b>'+naira(o.total_ngn)+'</b></div>';
+  if(o.courier||o.tracking_no)h+='<p style="margin-top:1rem"><b>Courier:</b> '+esc(o.courier||'')+' '+esc(o.tracking_no||'')+'</p>';
+  if(o.status==='delivered'){h+='<h3>How did it fit?</h3>'+(o.items||[]).map(i=>'<form class="trev" data-item="'+esc(i.item_id)+'" style="margin-bottom:1rem"><b>'+esc(i.name)+'</b><div class="two"><div class="field"><label>Rating</label><select name="st"><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></div><div class="field"><label>Fit</label><select name="sz"><option value="true_to_size">True to size</option><option value="ran_small">Ran small</option><option value="ran_large">Ran large</option></select></div></div><div class="field"><label>Your name</label><input name="nm" maxlength="40" required value="'+esc(String(o.customer_name||'').split(' ')[0])+'"></div><div class="field"><label>Your review</label><textarea name="tx" required minlength="3" maxlength="500"></textarea></div><button class="btn sm" type="submit">Post review</button><span class="rvm" role="status"></span></form>').join('')}
+  h+='<p style="margin-top:1.5rem"><a class="btn sm ghost" target="_blank" rel="noopener" href="'+esc(wa(waMsg))+'">Message us about this order</a></p><p style="color:var(--muted);font-size:.85rem;margin-top:1rem">Keep this page link to check your order any time.</p></div>';
+  box.innerHTML=h}
+async function refreshAll(){const[p,r,sh,z]=await Promise.all([BE.products(),BE.reviews(),BE.shots(),BE.zones()]);S.products=p;S.reviews=r;S.shots=sh;S.dlv=z;
+  if(S.canEdit){S.orders=await BE.orders();S.pay=await BE.bank()}paint();if(CUR==='admin'&&S.canEdit&&!S.form&&!(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)))renderAdmin();syncOrderLink()}
+function renderLogin(){$('#admin').innerHTML='<div class="head"><div><span class="eyebrow">Owner dashboard</span><h1 class="h2like">Sign in</h1></div></div><div style="max-width:420px"><p style="color:var(--muted);margin-bottom:1rem">For the owner and managers of X and O. Add products, see orders, customers, stock and sales.</p><form id="loginForm"><div class="field"><label for="lgE">Email</label><input id="lgE" type="email" autocomplete="username" required></div><div class="field"><label for="lgP">Password</label><input id="lgP" type="password" autocomplete="current-password" required></div><div class="err" id="lgErr" role="alert"></div><button class="btn" type="submit">Sign in</button></form></div>'}
+async function bootLive(){$('#ownLogin').hidden=false;
+  try{S.canEdit=await BE.isAdmin();$('#ownerBtn').hidden=!S.canEdit}catch(e){}
+  try{await refreshAll()}catch(e){toast('Could not load the collection. Please refresh the page.')}
+  BE.watchStock(()=>refreshAll().catch(()=>{}));}
+async function logOrder(f){if(!S.db||!S.uid)return;try{const oid='o'+Date.now().toString(36);const ref=S.db.doc('orders/'+S.uid);const cur=await ref.get();const base=cur.exists?cur.data():{};
+  await ref.set({...base,[oid]:{status:'new',createdAt:Date.now(),customer:f,total:sub(),items:S.cart.map(l=>({pid:l.pid,name:l.name,colour:l.colour,size:l.size,n:l.n,price:l.price}))}})}catch(e){}}
+
+/* ---------- testimonials ---------- */
+function renderLove(){
+  const sh=S.shots.filter(x=>safe(x.url));
+  $('#loveTools').innerHTML=S.canEdit?'<label class="btn sm ghost" for="shotUp">Add screenshots</label><input id="shotUp" type="file" accept="image/*" multiple hidden>':'';
+  $('#loveGrid').innerHTML=sh.length?sh.map(x=>'<figure><img loading="lazy" src="'+esc(safe(x.url))+'" alt="Customer message about X and O">'+(S.canEdit?'<button class="btn sm" style="position:absolute;right:8px;top:8px" data-act="delshot" data-id="'+esc(x.id)+'">Remove</button>':'')+'</figure>').join('')
+   :['Real WhatsApp messages from our customers appear here.','Thank-you notes after delivery, in the customer’s own words.','Fit, colour and fabric feedback.'].map(t=>'<div class="empty-frame"><p>'+t+'</p></div>').join('')}
+
+/* ---------- sheets ---------- */
+function show(id){if(!document.body.classList.contains('lock'))S.opener=document.activeElement;$('#scrim').classList.add('on');$('#'+id).classList.add('on');document.body.classList.add('lock');const c=$('#'+id+' .x');if(c)c.focus()}
+function hideAll(){['pdp'].forEach(i=>$('#'+i).classList.remove('on'));$('#scrim').classList.remove('on');document.body.classList.remove('lock');if(S.opener&&S.opener.isConnected&&S.opener.focus)S.opener.focus();S.opener=null}
+addEventListener('keydown',e=>{if(e.key==='Escape')hideAll()});
+
+/* ---------- owner tools ---------- */
+async function shrink(file){if(!/^image\/(jpeg|png|webp)$/.test(file.type))return file;
+  try{const bmp=await createImageBitmap(file);const k=Math.min(1,1600/Math.max(bmp.width,bmp.height));const c=document.createElement('canvas');c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);
+    return await new Promise(r=>c.toBlob(b=>r(b||file),'image/jpeg',.85))}catch(e){return file}}
+async function upload(file){if(BE){const isV=file.type.startsWith('video/');if(isV&&file.size>50*1048576)throw new Error(file.name+' is over 50 MB. Trim the clip to about 30 seconds and try again.');return BE.upload(isV?file:await shrink(file))}
+  if(!S.assets)throw new Error('Uploads need owner access');
+  const isV=file.type.startsWith('video/');if(isV&&file.size>20*1048576)throw new Error(file.name+' is over 20 MB. Trim the clip to about 30 seconds and try again.');
+  const blob=isV?file:await shrink(file);const r=await S.assets.upload(blob);return{url:r.url,type:isV?'video':'image'}}
+function newForm(p){return p?{id:p.id,name:p.name||'',category:p.category||'Jilbab',origin:p.origin||'Egypt',price:p.price||'',fabric:p.fabric||'',desc:p.desc||'',colours:cols(p).map(c=>c.name+' '+c.hex).join('\n'),sizes:sizes(p).join(', '),stock:{...(p.stock||{})},media:[...(p.media||[])],active:p.active!==false}
+  :{id:'',name:'',category:'Jilbab',origin:'Egypt',price:'',fabric:'',desc:'',colours:'Black #231c1c',sizes:'54, 56, 58, 60',stock:{},media:[],active:true}}
+function readForm(){const F=S.form,g=id=>$('#'+id);F.name=g('fName').value;F.category=g('fCat').value;F.origin=g('fOrigin').value;F.price=g('fPrice').value;F.fabric=g('fFabric').value;F.desc=g('fDesc').value;F.colours=g('fCols').value;F.sizes=g('fSizes').value;F.active=g('fActive').checked;
+  document.querySelectorAll('[data-sk]').forEach(i=>F.stock[i.dataset.sk]=Math.max(0,parseInt(i.value)||0))}
+function renderAdmin(){const t=S.adminTab;
+  const pend=S.orders.filter(o=>o.status==='new'||o.status==='awaiting_payment').length;
+  const TL={overview:'Overview',products:'Products',orders:'Orders'+(pend?' ('+pend+')':''),customers:'Customers',inventory:'Stock',reviews:'Reviews'+(S.reviews.filter(r=>!r.approved).length?' ('+S.reviews.filter(r=>!r.approved).length+')':''),delivery:'Delivery and payment',reports:'Reports'};
+  const tabs=Object.keys(TL).map(k=>'<button class="chip" data-act="atab" data-v="'+k+'" aria-pressed="'+(t===k)+'">'+TL[k]+'</button>').join('');
+  let body='';const OL=filteredOrders();
+  if(t==='products'){
+    if(S.form){const F=S.form,cs=parseColours(F.colours),ss=F.sizes.split(',').map(s=>s.trim()).filter(Boolean);
+      body='<h3 style="font-size:1.7rem;margin-bottom:1rem">'+(F.id?'Edit product':'Add a product')+'</h3><form id="pForm">'
+      +'<div class="field"><label for="fName">Product name</label><input id="fName" required value="'+esc(F.name)+'"></div>'
+      +'<div class="two"><div class="field"><label for="fCat">Category</label><select id="fCat">'+['Jilbab','Hijab','Prayer hijab'].map(c=>'<option'+(F.category===c?' selected':'')+'>'+c+'</option>').join('')+'</select></div>'
+      +'<div class="field"><label for="fOrigin">Made in</label><select id="fOrigin">'+['Egypt','Nigeria'].map(c=>'<option'+(F.origin===c?' selected':'')+'>'+c+'</option>').join('')+'</select></div></div>'
+      +'<div class="field"><label for="fPrice">Price in naira</label><input id="fPrice" inputmode="numeric" required value="'+esc(F.price)+'"></div>'
+      +'<div class="field"><label for="fFabric">Fabric note (shown to customers)</label><textarea id="fFabric">'+esc(F.fabric)+'</textarea></div>'
+      +'<div class="field"><label for="fDesc">Short description</label><textarea id="fDesc">'+esc(F.desc)+'</textarea></div>'
+      +'<div class="field"><label for="fCols">Colours, one per line (add a colour code like #e0762f if you want an exact swatch)</label><textarea id="fCols">'+esc(F.colours)+'</textarea></div>'
+      +'<div class="field"><label for="fSizes">Sizes, separated by commas</label><input id="fSizes" value="'+esc(F.sizes)+'"></div>'
+      +'<button class="btn sm ghost" type="button" data-act="regrid">Update stock table</button>'
+      +'<p class="lbl"><span>Stock per colour and size</span></p><div class="stockgrid" style="--n:'+ss.length+'"><span></span>'+ss.map(s=>'<b style="text-align:center">'+esc(s)+'</b>').join('')
+      +cs.map(c=>'<b>'+esc(c.name)+'</b>'+ss.map(s=>'<input type="number" min="0" data-sk="'+esc(c.name+'|'+s)+'" value="'+(F.stock[c.name+'|'+s]??0)+'" aria-label="'+esc(c.name+' '+s)+'">').join('')).join('')+'</div>'
+      +'<p class="lbl"><span>Photos and videos</span></p><label class="btn sm ghost" for="mUp">Choose from phone</label><input id="mUp" type="file" accept="image/*,video/*" multiple hidden><p style="color:var(--muted);font-size:.85rem;margin-top:.4rem">Videos: about 30 seconds and under 20 MB. Photos are resized automatically.</p>'
+      +'<div class="up">'+F.media.map((m,i)=>'<div class="m"><div class="t">'+(m.type==='video'?'<video src="'+esc(safe(m.url))+'" muted></video>':'<img src="'+esc(safe(m.url))+'" alt="">')+'</div><select data-mc="'+i+'" aria-label="Colour for media '+(i+1)+'"><option value="">All colours</option>'+cs.map(c=>'<option'+(m.colour===c.name?' selected':'')+'>'+esc(c.name)+'</option>').join('')+'</select><button type="button" class="btn sm ghost" data-act="mrm" data-i="'+i+'">Remove</button></div>').join('')+'</div>'
+      +'<label style="display:flex;gap:.5rem;align-items:center;margin:.8rem 0"><input id="fActive" type="checkbox"'+(F.active?' checked':'')+'> Show on the website</label><div id="fErr" class="err" role="alert"></div>'
+      +'<div style="display:flex;gap:.6rem;flex-wrap:wrap"><button class="btn" type="submit">Save product</button><button class="btn ghost" type="button" data-act="fcancel">Cancel</button></div></form>'}
+    else body=setupCard()+'<div style="display:flex;justify-content:space-between;gap:1rem;align-items:center;margin-bottom:1rem"><p style="color:var(--muted)">'+(S.products.length?S.products.length+' products':'No products yet. Samples are shown on the site until you add one.')+'</p><button class="btn sm" data-act="fnew">Add product</button></div>'
+      +'<div class="scroll"><table class="tbl"><thead><tr><th>Product</th><th>Price</th><th>In stock</th><th></th></tr></thead><tbody>'+S.products.map(p=>'<tr><td><b>'+esc(p.name)+'</b><br><small>'+esc(p.category||'')+(p.active===false?' · hidden':'')+'</small></td><td>'+naira(p.price)+'</td><td>'+total(p)+'</td><td><button class="btn sm ghost" data-act="fedit" data-id="'+esc(p.id)+'">Edit</button> <button class="btn sm ghost" data-act="fdel" data-id="'+esc(p.id)+'">Delete</button></td></tr>').join('')+'</tbody></table></div>'}
+  if(t==='orders')body=ordersFilters()+(OL.length?'<div class="scroll"><table class="tbl"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody>'+[...OL].sort((a,b)=>b.createdAt-a.createdAt).map(o=>'<tr><td>'+(o.no?'<b>#'+o.no+'</b> <small>'+esc(o.method||'')+'</small><br>':'')+(o.items||[]).map(i=>esc(i.name)+' ('+esc(i.colour)+', '+esc(i.size)+') x'+i.n).join('<br>')+'<br><small>'+new Date(o.createdAt).toLocaleString('en-NG')+'</small></td><td>'+esc(o.customer?.name)+'<br><small>'+esc(o.customer?.phone)+'<br>'+esc(o.customer?.state)+(o.customer?.address?'<br>'+esc(o.customer.address):'')+(o.customer?.email?'<br>'+esc(o.customer.email):'')+'</small></td><td>'+naira(o.total)+'</td><td><span class="pill">'+esc(o.status)+'</span></td><td>'+(NEXT[o.status]?'<button class="btn sm" data-act="ostep" data-id="'+esc(o.id)+'">'+NEXT[o.status][1]+'</button> ':'')+(o.receipt?'<button class="btn sm ghost" data-act="rcpt" data-id="'+esc(o.id)+'">Receipt</button> ':'')+(BE&&['awaiting_payment','paid','packed'].includes(o.status)?'<button class="btn sm ghost" data-act="ocancel" data-id="'+esc(o.id)+'">Cancel</button> ':'')+'<a class="btn sm ghost" target="_blank" rel="noopener" href="'+esc(waTo(o.customer?.phone,'Hello '+(o.customer?.name||'')+', thank you for your order from X and O.'))+'">WhatsApp</a></td></tr>').join('')+'</tbody></table></div><p style="color:var(--muted);font-size:.85rem;margin-top:.8rem">'+(BE?'Items are held as soon as the customer orders, and go back into stock if an unpaid order expires or is cancelled.':'"Payment received" takes the items out of stock.')+'</p>':'<p style="color:var(--muted)">Orders sent from the website appear here.</p>');
+  if(t==='reviews')body=S.reviews.length?S.reviews.map(r=>'<div class="rev"><span class="stars">'+'★'.repeat(+r.stars||0)+'</span> <b style="display:inline">'+esc(r.name)+'</b> <span class="pill">'+(r.approved?'Showing':'Waiting')+'</span><p>'+esc(r.text)+'</p><small>'+esc((byId(r.productId)||{}).name||'')+'</small><div style="margin-top:.4rem;display:flex;gap:.4rem">'+(r.approved?'':'<button class="btn sm" data-act="rapp" data-id="'+esc(r.id)+'">Approve</button>')+'<button class="btn sm ghost" data-act="rdel" data-id="'+esc(r.id)+'">Delete</button></div></div>').join(''):'<p style="color:var(--muted)">New customer reviews wait here for your approval before they show on the product page.</p>';
+  if(t==='overview')body=overviewTab();if(t==='customers')body=customersTab();if(t==='inventory')body=inventoryTab();
+  if(t==='delivery')body=deliveryTab();if(t==='reports')body=reportsTab();
+  $('#admin').innerHTML='<div class="head"><div><span class="eyebrow">Owner dashboard</span><h1 class="h2like">X and O business records</h1></div><div style="display:flex;gap:.5rem;flex-wrap:wrap">'+(BE?'<button class="btn sm ghost" data-act="refresh">Refresh</button><button class="btn sm ghost" data-act="signout">Sign out</button>':'')+'</div></div><div class="tabs" style="margin-bottom:1.4rem">'+tabs+'</div>'+body}
+
+const PAIDX=['new','awaiting_payment','cancelled','expired','needs_review'];
+const isPaid=o=>!PAIDX.includes(o.status);
+const sumT=a=>a.reduce((x,o)=>x+(o.total||0),0);
+S.of={st:'all',q:''};
+const ST_LABEL={all:'All',awaiting_payment:'Awaiting payment',new:'New',paid:'Paid',packed:'Packed',shipped:'Shipped',delivered:'Delivered',cancelled:'Cancelled',expired:'Expired'};
+function filteredOrders(){const q=(S.of.q||'').trim().toLowerCase();return S.orders.filter(o=>(S.of.st==='all'||o.status===S.of.st)&&(!q||[o.no,o.customer?.name,o.customer?.phone,o.customer?.state].join(' ').toLowerCase().includes(q)))}
+function ordersFilters(){const have=new Set(S.orders.map(o=>o.status));
+  return '<input class="search" id="oq" type="search" placeholder="Search name, phone, state or order number" aria-label="Search orders" value="'+esc(S.of.q)+'"><div class="tabs" style="margin-bottom:1rem">'+Object.keys(ST_LABEL).filter(k=>k==='all'||have.has(k)).map(k=>'<button class="chip" data-act="ofilt" data-v="'+k+'" aria-pressed="'+(S.of.st===k)+'">'+ST_LABEL[k]+'</button>').join('')+'</div>'}
+function normPhone(p){let d=String(p||'').replace(/\D/g,'');if(d.startsWith('234'))d='0'+d.slice(3);return d}
+function customerList(){const m={};S.orders.forEach(o=>{const k=normPhone(o.customer?.phone)||('n:'+(o.customer?.name||''));const c=m[k]||(m[k]={name:o.customer?.name||'',phone:o.customer?.phone||'',state:o.customer?.state||'',email:o.customer?.email||'',orders:0,spent:0,last:0,first:Infinity});
+    c.orders++;if(isPaid(o))c.spent+=o.total||0;if(o.createdAt>c.last){c.last=o.createdAt;c.name=o.customer?.name||c.name;c.state=o.customer?.state||c.state}c.first=Math.min(c.first,o.createdAt);if(o.customer?.email)c.email=o.customer.email});
+  return Object.values(m).sort((a,b)=>b.spent-a.spent||b.last-a.last)}
+function lowList(){const low=[];S.products.forEach(p=>cols(p).forEach(c=>sizes(p).forEach(s=>{const n=qty(p,c.name,s);if(n<=LOW)low.push({p:p.name,c:c.name,s,n})})));return low.sort((a,b)=>a.n-b.n)}
+function overviewTab(){const paid=S.orders.filter(isPaid),now=Date.now(),D=864e5;
+  const r30=sumT(paid.filter(o=>now-o.createdAt<30*D)),r7=sumT(paid.filter(o=>now-o.createdAt<7*D));
+  const aw=S.orders.filter(o=>o.status==='new'||o.status==='awaiting_payment'),toShip=S.orders.filter(o=>o.status==='paid'||o.status==='packed'),custs=customerList(),low=lowList();
+  const waiting=S.reviews.filter(r=>!r.approved).length,live=S.products.filter(p=>p.active!==false).length;
+  const k=(l,v,w)=>'<div class="kpi'+(w?' warn':'')+'"><span>'+l+'</span><b>'+v+'</b></div>';
+  const days=[];for(let i=13;i>=0;i--){const d=new Date(now-i*D);days.push({k:d.toDateString(),l:d.getDate(),v:0})}
+  paid.forEach(o=>{const x=days.find(d=>d.k===new Date(o.createdAt).toDateString());if(x)x.v+=o.total||0});const mx=Math.max(1,...days.map(d=>d.v));
+  const byCat={},byState={};paid.forEach(o=>{byState[o.customer?.state||'Unknown']=(byState[o.customer?.state||'Unknown']||0)+(o.total||0);(o.items||[]).forEach(i=>{const p=S.products.find(x=>x.name===i.name),c=p?p.category:'Other';byCat[c]=(byCat[c]||0)+(i.n*(i.price||(p?p.price:0)))})});
+  const tbl=(o)=>Object.keys(o).length?'<table class="tbl"><tbody>'+Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,6).map(e=>'<tr><td>'+esc(e[0])+'</td><td style="text-align:right">'+naira(e[1])+'</td></tr>').join('')+'</tbody></table>':'<p style="color:var(--muted)">Appears after the first paid order.</p>';
+  const recent=[...S.orders].sort((a,b)=>b.createdAt-a.createdAt).slice(0,6);
+  return '<div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.2rem"><button class="btn" data-act="qadd">+ Add new product (photos and video)</button></div>'
+  +setupCard()
+  +'<div class="kpis">'+k('Total sales',naira(sumT(paid)))+k('Last 30 days',naira(r30))+k('Last 7 days',naira(r7))+k('All orders',S.orders.length)+k('Awaiting payment',aw.length,aw.length)+k('To pack or ship',toShip.length,toShip.length)+k('Customers',custs.length)+k('Average order',paid.length?naira(Math.round(sumT(paid)/paid.length)):'-')+k('Products live',live)+k('Low or sold out',low.length,low.length)+k('Reviews waiting',waiting,waiting)+'</div>'
+  +'<h3 style="font-size:1.4rem">Sales, last 14 days</h3><div class="bars" role="img" aria-label="Sales per day for the last 14 days">'+days.map(d=>'<i style="height:'+Math.round(d.v/mx*100)+'%" title="'+naira(d.v)+'"></i>').join('')+'</div><div class="barlab">'+days.map(d=>'<span>'+d.l+'</span>').join('')+'</div>'
+  +'<div class="dash2" style="margin-top:1.6rem"><div><h3 style="font-size:1.4rem;margin-bottom:.4rem">Sales by category</h3>'+tbl(byCat)+'</div><div><h3 style="font-size:1.4rem;margin-bottom:.4rem">Sales by state</h3>'+tbl(byState)+'</div></div>'
+  +'<h3 style="font-size:1.4rem;margin:1.6rem 0 .4rem">Latest orders</h3>'+(recent.length?'<div class="scroll"><table class="tbl"><tbody>'+recent.map(o=>'<tr><td><b>'+(o.no?'#'+o.no:'')+'</b><br><small>'+new Date(o.createdAt).toLocaleDateString('en-NG')+'</small></td><td>'+esc(o.customer?.name)+'<br><small>'+esc(o.customer?.state)+'</small></td><td>'+naira(o.total)+'</td><td><span class="pill">'+esc(o.status)+(o.receipt&&(o.status==='awaiting_payment')?' · receipt sent':'')+'</span></td></tr>').join('')+'</tbody></table></div>':'<p style="color:var(--muted)">No orders yet.</p>')
+  +(low.length?'<h3 style="font-size:1.4rem;margin:1.6rem 0 .4rem">Running low</h3><div class="scroll"><table class="tbl"><tbody>'+low.slice(0,8).map(l=>'<tr><td>'+esc(l.p)+'</td><td>'+esc(l.c)+' · '+esc(l.s)+'</td><td><span class="pill">'+(l.n===0?'Sold out':l.n+' left')+'</span></td></tr>').join('')+'</tbody></table></div>':'')}
+function customersTab(){const c=customerList();
+  return '<p style="color:var(--muted);margin-bottom:.8rem">'+c.length+' customers. Built from every order placed on the website.</p>'
+  +(c.length?'<div class="scroll"><table class="tbl"><thead><tr><th>Customer</th><th>State</th><th>Orders</th><th>Spent (paid)</th><th>Last order</th><th></th></tr></thead><tbody>'+c.map(x=>'<tr><td><b>'+esc(x.name)+'</b><br><small>'+esc(x.phone)+(x.email?'<br>'+esc(x.email):'')+'</small></td><td>'+esc(x.state)+'</td><td>'+x.orders+'</td><td>'+naira(x.spent)+'</td><td>'+new Date(x.last).toLocaleDateString('en-NG')+'</td><td><a class="btn sm ghost" target="_blank" rel="noopener" href="'+esc(waTo(x.phone,'Hello '+x.name+', this is X and O.'))+'">WhatsApp</a></td></tr>').join('')+'</tbody></table></div>':'<p style="color:var(--muted)">Customers appear here after their first order.</p>')
+  +'<div style="margin-top:1.2rem"><button class="btn sm ghost" data-act="csvCustomers">Download customers (CSV)</button></div>'}
+function inventoryTab(){const rows=[];S.products.forEach(p=>cols(p).forEach(c=>sizes(p).forEach(s=>rows.push({p:p.name,c:c.name,s,n:qty(p,c.name,s)}))));
+  const units=rows.reduce((a,r)=>a+r.n,0),value=S.products.reduce((a,p)=>a+total(p)*(p.price||0),0);
+  let h='<div class="kpis">'+'<div class="kpi"><span>Units in stock</span><b>'+units+'</b></div><div class="kpi"><span>Stock value (at price)</span><b>'+naira(value)+'</b></div><div class="kpi"><span>Sold-out options</span><b>'+rows.filter(r=>r.n===0).length+'</b></div></div>'
+  +'<div class="scroll"><table class="tbl"><thead><tr><th>Product</th><th>Colour</th><th>Size</th><th>In stock</th></tr></thead><tbody>'+(rows.length?rows.map(r=>'<tr><td>'+esc(r.p)+'</td><td>'+esc(r.c)+'</td><td>'+esc(r.s)+'</td><td><span class="pill"'+(r.n===0?' style="background:var(--pink);color:#fff"':'')+'>'+(r.n===0?'Sold out':r.n)+'</span></td></tr>').join(''):'<tr><td colspan="4" style="color:var(--muted)">No products yet.</td></tr>')+'</tbody></table></div>'
+  +'<p style="margin-top:.8rem"><button class="btn sm ghost" data-act="atab" data-v="products">Change stock in Products</button> <button class="btn sm ghost" data-act="csvStock">Download stock (CSV)</button></p>';
+  if(BE){h+='<h3 style="font-size:1.4rem;margin:1.8rem 0 .4rem">Stock movements</h3>'+((S.slog||[]).length?'<div class="scroll"><table class="tbl"><thead><tr><th>When</th><th>Item</th><th>Change</th><th>Why</th></tr></thead><tbody>'+S.slog.map(l=>'<tr><td>'+new Date(l.at).toLocaleString('en-NG')+'</td><td>'+esc(l.item)+'</td><td>'+(l.delta>0?'+':'')+l.delta+'</td><td>'+esc(l.reason)+'</td></tr>').join('')+'</tbody></table></div>':'<p style="color:var(--muted)">Every sale, return to stock and manual change is recorded here.</p>')
+    +'<h3 style="font-size:1.4rem;margin:1.8rem 0 .4rem">Customers waiting for a restock</h3>'+((S.rest||[]).length?'<div class="scroll"><table class="tbl"><tbody>'+S.rest.map(r=>'<tr><td>'+esc(r.item)+'</td><td>'+esc(r.phone)+'</td><td><a class="btn sm ghost" target="_blank" rel="noopener" href="'+esc(waTo(r.phone,'Hello! The piece you asked about at X and O is back in stock.'))+'">Tell them</a></td></tr>').join('')+'</tbody></table></div>':'<p style="color:var(--muted)">When a customer taps "tell me when it is back" on a sold-out size, they appear here.</p>')}
+  return h}
+async function loadExtras(){if(!BE||!S.canEdit)return;try{S.slog=await BE.stockLog()}catch(e){S.slog=[]}try{S.rest=await BE.restocks()}catch(e){S.rest=[]}if(CUR==='admin'&&S.adminTab==='inventory')renderAdmin()}
+function setupCard(){const steps=[['Add your first products with photos and a short video',S.products.length>0],['Save your bank details for transfers',!!(S.pay&&S.pay.number)],['Set delivery fees for the states you ship to',Object.keys(S.dlv||{}).length>0],['Upload customer WhatsApp screenshots',S.shots.length>0]];
+  const done=steps.filter(s=>s[1]).length;if(done===steps.length)return'';
+  return '<div class="note"><b>Launch checklist: '+done+' of '+steps.length+' done</b><ul style="margin:.5rem 0 0;padding-left:1.2rem">'+steps.map(s=>'<li>'+(s[1]?'✓ ':'')+esc(s[0])+'</li>').join('')+'</ul><details style="border:0;padding:.6rem 0 0"><summary>Photo and video guide</summary><p>For each colour take a full-length front photo, a back photo, a close-up of the fabric and one 10 to 15 second video of the piece moving. Shoot in daylight against a plain wall with the phone held upright, and use the same light for every colour so customers see the true shade.</p></details></div>'}
+function deliveryTab(){const p=S.pay||{};
+  return '<h3 style="font-size:1.6rem;margin-bottom:.8rem">Bank transfer details</h3><form id="payForm"><div class="two"><div class="field"><label for="pBank">Bank</label><input id="pBank" value="'+esc(p.bank)+'"></div><div class="field"><label for="pName">Account name</label><input id="pName" value="'+esc(p.name)+'"></div></div><div class="field"><label for="pNum">Account number</label><input id="pNum" inputmode="numeric" value="'+esc(p.number)+'"></div><button class="btn sm" type="submit">Save bank details</button></form>'
+  +'<h3 style="font-size:1.6rem;margin:2rem 0 .4rem">Delivery fee and time by state</h3><p style="color:var(--muted);font-size:.9rem;margin-bottom:.8rem">Customers see this as an estimate and the courier confirms the final fee. Leave a state blank if you do not know yet.</p><form id="dlvForm"><div class="scroll"><table class="tbl"><thead><tr><th>State</th><th>Fee (₦)</th><th>Days</th></tr></thead><tbody>'
+  +STATES.map(s=>{const d=S.dlv[s]||{};return '<tr><td>'+esc(s)+'</td><td><input type="number" min="0" data-df="'+esc(s)+'" value="'+esc(d.fee||'')+'" style="width:110px;min-height:38px" aria-label="Fee for '+esc(s)+'"></td><td><input type="number" min="0" data-dd="'+esc(s)+'" value="'+esc(d.days||'')+'" style="width:70px;min-height:38px" aria-label="Days for '+esc(s)+'"></td></tr>'}).join('')
+  +'</tbody></table></div><button class="btn sm" type="submit" style="margin-top:1rem">Save delivery fees</button></form>'}
+function reportsTab(){const paid=S.orders.filter(o=>!['new','awaiting_payment','cancelled','expired','needs_review'].includes(o.status)),rev=paid.reduce((a,o)=>a+(o.total||0),0),best={};
+  paid.forEach(o=>(o.items||[]).forEach(i=>best[i.name]=(best[i.name]||0)+i.n));
+  const top=Object.entries(best).sort((a,b)=>b[1]-a[1]).slice(0,5),low=[];
+  S.products.forEach(p=>cols(p).forEach(c=>sizes(p).forEach(s=>{const n=qty(p,c.name,s);if(n<=LOW)low.push({p:p.name,c:c.name,s,n})})));low.sort((a,b)=>a.n-b.n);
+  return '<div class="two" style="margin-bottom:1.2rem"><div class="note"><span class="eyebrow">Paid orders</span><div style="font-size:1.8rem;font-weight:700">'+paid.length+'</div></div><div class="note"><span class="eyebrow">Sales from paid orders</span><div style="font-size:1.8rem;font-weight:700">'+naira(rev)+'</div></div></div>'
+  +'<h3 style="font-size:1.5rem;margin:1rem 0 .4rem">Best sellers</h3>'+(top.length?'<table class="tbl"><tbody>'+top.map(t=>'<tr><td>'+esc(t[0])+'</td><td>'+t[1]+' sold</td></tr>').join('')+'</tbody></table>':'<p style="color:var(--muted)">Best sellers appear after the first paid order.</p>')
+  +'<h3 style="font-size:1.5rem;margin:1.6rem 0 .4rem">Low or sold-out stock</h3>'+(low.length?'<div class="scroll"><table class="tbl"><tbody>'+low.map(l=>'<tr><td>'+esc(l.p)+'</td><td>'+esc(l.c)+' · '+esc(l.s)+'</td><td><span class="pill">'+(l.n===0?'Sold out':l.n+' left')+'</span></td></tr>').join('')+'</tbody></table></div>':'<p style="color:var(--muted)">Nothing is running low.</p>')
+  +'<div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.6rem"><button class="btn sm ghost" data-act="csvOrders">Download orders (CSV)</button><button class="btn sm ghost" data-act="csvStock">Download stock (CSV)</button></div>'}
+async function stepOrder(id){const o=S.orders.find(x=>x.id===id);if(!o||!NEXT[o.status])return;
+  if(BE){try{await BE.setStatus(id,NEXT[o.status][0]);await refreshAll();toast('Order updated')}catch(e){toast('Could not update the order')}return}
+  if(o.status==='new')return confirmOrder(id);
+  try{await S.db.doc('orders/'+o.uid).update({[id]:{status:NEXT[o.status][0]}});toast('Order updated')}catch(e){toast('Could not update the order')}}
+async function saveProduct(){readForm();const F=S.form,err=$('#fErr');err.textContent='';
+  if(!F.name.trim()||!(+F.price>0)){err.textContent='Add a product name and a price.';return}
+  const cs=parseColours(F.colours),ss=F.sizes.split(',').map(s=>s.trim()).filter(Boolean);
+  if(!cs.length||!ss.length){err.textContent='Add at least one colour and one size.';return}
+  const stock={};cs.forEach(c=>ss.forEach(s=>stock[c.name+'|'+s]=F.stock[c.name+'|'+s]||0));
+  const doc={name:F.name.trim(),category:F.category,origin:F.origin,price:+F.price,fabric:F.fabric.trim(),desc:F.desc.trim(),colours:cs,sizes:ss,stock,media:F.media,active:F.active,createdAt:F.createdAt||Date.now()};
+  try{if(BE){await BE.saveProduct(doc,F.id||null);await refreshAll();S.form=null;toast('Product saved');renderAdmin();return}const ref=F.id?S.db.collection('products').doc(F.id):S.db.collection('products').doc();if(F.id){const old=S.products.find(p=>p.id===F.id);doc.createdAt=old?.createdAt||doc.createdAt}await ref.set(doc);S.form=null;toast('Product saved');renderAdmin()}
+  catch(e){err.textContent='Could not save. '+(e.message||'Check that you are signed in as an editor.')}}
+async function confirmOrder(id){const o=S.orders.find(x=>x.id===id);if(!o)return;
+  try{for(const it of o.items||[]){const p=S.products.find(x=>x.id===it.pid);if(!p)continue;const k=it.colour+'|'+it.size;const n=Math.max(0,(Number((p.stock||{})[k])||0)-it.n);await S.db.doc('products/'+p.id).update({stock:{[k]:n}})}
+    await S.db.doc('orders/'+o.uid).update({[id]:{status:'paid'}});toast('Order confirmed and stock updated')}catch(e){toast('Could not update the order')}}
+
+/* ---------- events ---------- */
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,v=b.dataset.v,id=b.dataset.id,i=+b.dataset.i;
+  if(a==='cat'){S.cat=v;renderFilters();renderGrid()}
+  else if(a==='origin'){S.origin=v;renderFilters();renderGrid()}
+  else if(a==='open')openProduct(id);
+  else if(a==='closeall')hideAll();
+  else if(a==='cart'){if(location.hash==='#/cart')renderCart();else location.hash='#/cart'}
+  else if(a==='menu'){const n=$('#mobnav');n.hidden=!n.hidden;b.setAttribute('aria-expanded',String(!n.hidden))}
+  else if(a==='admin'){if(location.hash==='#/admin')route();else location.hash='#/admin'}
+  else if(a==='thumb'){S.sel.idx=i;renderPdp()}
+  else if(a==='colour'){const p=byId(S.sel.id);S.sel.colour=v;S.sel.idx=0;if(!qty(p,v,S.sel.size))S.sel.size=sizes(p).find(z=>qty(p,v,z)>0)||'';S.sel.n=1;renderPdp()}
+  else if(a==='size'){S.sel.size=v;S.sel.n=1;renderPdp()}
+  else if(a==='inc'){const p=byId(S.sel.id);if(S.sel.n<qty(p,S.sel.colour,S.sel.size))S.sel.n++;renderPdp()}
+  else if(a==='dec'){if(S.sel.n>1)S.sel.n--;renderPdp()}
+  else if(a==='add')add();
+  else if(a==='cinc'){const l=S.cart[i],p=byId(l.pid);if(!p||l.n<qty(p,l.colour,l.size))l.n++;else toast('No more in stock');saveCart();renderCart();renderCartCount()}
+  else if(a==='cdec'){if(S.cart[i].n>1)S.cart[i].n--;saveCart();renderCart();renderCartCount()}
+  else if(a==='crm'){S.cart.splice(i,1);saveCart();renderCart();renderCartCount()}
+  else if(a==='atab'){S.adminTab=v;S.form=null;renderAdmin()}
+  else if(a==='fnew'){S.form=newForm();renderAdmin()}
+  else if(a==='fedit'){S.form=newForm(S.products.find(p=>p.id===id));renderAdmin()}
+  else if(a==='fcancel'){S.form=null;renderAdmin()}
+  else if(a==='regrid'){readForm();renderAdmin()}
+  else if(a==='mrm'){readForm();S.form.media.splice(i,1);renderAdmin()}
+  else if(a==='fdel'){if(b.dataset.arm){try{if(BE){const r=await BE.deleteProduct(id);await refreshAll();toast(r==='hidden'?'This product has past orders, so it was hidden instead':'Product deleted');renderAdmin()}else{await S.db.doc('products/'+id).delete();toast('Product deleted')}}catch(x){toast('Could not delete')}}else{b.dataset.arm=1;b.textContent='Tap again to delete'}}
+  else if(a==='ostep')stepOrder(id);
+  else if(a==='place')placeLive();
+  else if(a==='qadd'){S.adminTab='products';S.form=newForm();renderAdmin();scrollTo(0,0)}
+  else if(a==='refresh'){try{await refreshAll();await loadExtras();renderAdmin();toast('Up to date')}catch(x){toast('Could not refresh')}}
+  else if(a==='ofilt'){S.of.st=v;renderAdmin()}
+  else if(a==='csvCustomers')saveCsv('xo-customers.csv',[['Name','Phone','Email','State','Orders','Spent (NGN)','Last order'],...customerList().map(c=>[c.name,c.phone,c.email,c.state,c.orders,c.spent,new Date(c.last).toISOString().slice(0,10)])]);
+  else if(a==='paycard'){b.disabled=true;try{location.href=await BE.payByCard(S.track.token)}catch(x){b.disabled=false;toast(/delivery_fee/.test(x.message)?'Card payment opens once we confirm the delivery fee.':'Card payment is not available right now. Please pay by transfer.')}}
+  else if(a==='lastorder'){e.preventDefault();let t=null;try{t=localStorage.getItem('xo-last')}catch(x){}if(t)location.hash='#/order/'+t}
+  else if(a==='login'){e.preventDefault();location.hash='#/admin'}
+  else if(a==='signout'){await BE.signOut();S.canEdit=false;S.orders=[];S.pay={};$('#ownerBtn').hidden=true;location.hash='#/';paint();toast('Signed out')}
+  else if(a==='rcpt'){const o=S.orders.find(x=>x.id===id);if(o&&o.receipt)try{const u=await BE.receiptUrl(o.receipt);const l=document.createElement('a');l.href=u;l.target='_blank';l.rel='noopener';l.click()}catch(x){toast('Could not open the receipt')}}
+  else if(a==='ocancel'){if(b.dataset.arm){try{await BE.setStatus(id,'cancelled');await refreshAll();toast('Order cancelled and items returned to stock')}catch(x){toast('Could not cancel')}}else{b.dataset.arm=1;b.textContent='Tap again to cancel'}}
+  else if(a==='csvOrders')saveCsv('xo-orders.csv',[['Order','Date','Customer','Phone','State','Items','Total (NGN)','Status'],...S.orders.map(o=>[o.id,new Date(o.createdAt).toISOString().slice(0,10),o.customer?.name,o.customer?.phone,o.customer?.state,(o.items||[]).map(i=>i.name+' ('+i.colour+', '+i.size+') x'+i.n).join('; '),o.total,o.status])]);
+  else if(a==='csvStock'){const rows=[['Product','Category','Made in','Colour','Size','Stock','Price (NGN)']];S.products.forEach(p=>cols(p).forEach(c=>sizes(p).forEach(s=>rows.push([p.name,p.category,p.origin,c.name,s,qty(p,c.name,s),p.price]))));saveCsv('xo-stock.csv',rows)}
+  else if(a==='rapp'){try{if(BE){await BE.approveReview(id);await refreshAll()}else await S.db.doc('reviews/'+id).update({approved:true})}catch(x){toast('Could not approve')}}
+  else if(a==='rdel'){try{if(BE){await BE.deleteReview(id);await refreshAll()}else await S.db.doc('reviews/'+id).delete()}catch(x){toast('Could not delete')}}
+  else if(a==='delshot'){try{if(BE){await BE.deleteShot(id);await refreshAll()}else await S.db.doc('shots/'+id).delete()}catch(x){toast('Could not remove')}}
+});
+document.addEventListener('input',e=>{if(e.target.closest('#cart'))syncOrderLink()});
+document.addEventListener('change',async e=>{const t=e.target;
+  if(t.id==='sort'){S.sort=t.value;renderGrid()}
+  if(t.id==='recUp'&&t.files[0]&&S.track){let f=t.files[0];if(f.size>5*1048576&&f.type!=='application/pdf')f=await shrink(f);if(f.size>5*1048576){toast('That file is over 5 MB. Please send a smaller photo.');return}
+    toast('Uploading…');try{await BE.sendReceipt(S.track.token,S.track.o.order_id,f);toast('Receipt received. Thank you!');showTrack(S.track.token)}catch(x){toast('Could not upload the receipt. Please send it on WhatsApp.')}}
+  if(t.id==='cState')syncOrderLink();
+  if(t.dataset&&t.dataset.mc!==undefined){S.form.media[+t.dataset.mc].colour=t.value}
+  if(t.id==='mUp'&&t.files.length){readForm();toast('Uploading…');try{for(const f of t.files){const m=await upload(f);S.form.media.push(m)}}catch(x){toast(x.message||'Upload failed')}renderAdmin()}
+  if(t.id==='shotUp'&&t.files.length){toast('Uploading…');try{for(const f of t.files){const m=await upload(f);if(BE){await BE.addShot(m.url);await refreshAll()}else await S.db.collection('shots').add({url:m.url,createdAt:Date.now()})}toast('Screenshots added')}catch(x){toast(x.message||'Upload failed')}t.value=''}
+});
+document.addEventListener('input',e=>{if(e.target.id==='oq'){const val=e.target.value;S.of.q=val;renderAdmin();const i=$('#oq');if(i){i.focus();i.setSelectionRange(val.length,val.length)}}});
+document.addEventListener('submit',async e=>{e.preventDefault();
+  if(e.target.id==='pForm')saveProduct();
+  if(e.target.id==='loginForm'){const err=$('#lgErr');err.textContent='';try{const adm=await BE.signIn($('#lgE').value.trim(),$('#lgP').value);if(!adm){await BE.signOut();err.textContent='This account is not an owner account.';return}
+      S.canEdit=true;$('#ownerBtn').hidden=false;await refreshAll();await loadExtras();renderAdmin()}catch(x){err.textContent='Could not sign in. Check your email and password.'}}
+  if(e.target.classList&&e.target.classList.contains('trev')){const f=e.target,m=f.querySelector('.rvm');
+    try{await BE.review(S.track.token,f.dataset.item,+f.st.value,f.nm.value.trim(),f.tx.value.trim(),f.sz.value);f.innerHTML='<p class="stock ok">Thank you. Your review will show after we approve it.</p>'}
+    catch(x){m.textContent=/duplicate|unique|23505/.test(String(x.message||x.code))?' You already reviewed this item.':' Could not post. Please try again.'}}
+  if(e.target.id==='payForm'){try{const b={bank:$('#pBank').value.trim(),name:$('#pName').value.trim(),number:$('#pNum').value.trim()};if(BE){await BE.saveBank(b);S.pay=b}else await S.db.doc('settings/payment').set(b);toast('Bank details saved')}catch(x){toast('Could not save')}}
+  if(e.target.id==='dlvForm'){const m={};document.querySelectorAll('[data-df]').forEach(i=>{const s=i.dataset.df,dd=+document.querySelector('[data-dd="'+s+'"]').value||0,f=+i.value||0;if(f||dd)m[s]={fee:f,days:dd}});
+    try{if(BE){await BE.saveZones(m,STATES);S.dlv=m}else await S.db.doc('settings/delivery').set(m);toast('Delivery fees saved')}catch(x){toast('Could not save')}}
+  if(e.target.id==='revForm'){const p=byId(S.sel.id),r={productId:p.id,name:$('#rvName').value.trim(),stars:+$('#rvStars').value,text:$('#rvText').value.trim(),approved:false,createdAt:Date.now()},m=$('#rvMsg');
+    try{if(!S.db||p.sample)throw 0;await S.db.collection('reviews').add(r);m.innerHTML='<p class="stock ok" style="margin-top:.6rem">Thank you. Your review will show after we approve it.</p>';e.target.reset()}
+    catch(x){m.innerHTML='<p style="margin-top:.6rem;color:var(--muted)">We could not post it here. <a href="'+esc(wa('Review for '+p.name+' ('+r.stars+' stars) from '+r.name+': '+r.text))+'" target="_blank" rel="noopener">Send it on WhatsApp instead</a>.</p>'}}
+});
+document.addEventListener('click',e=>{const a=e.target.closest('#sendOrder');if(!a)return;const f=cartForm();
+  if(!f.name.trim()||!f.phone.trim()||!f.state||!f.addr.trim()){e.preventDefault();$('#cErr').textContent='Please fill in your name, WhatsApp number, state and address.';return}
+  logOrder(f)});
+
+/* ---------- pages (hash routes: #/shop, #/about, #/love, #/help, #/contact, #/cart, #/privacy) ---------- */
+const PAGES={home:'X and O | Modest wear from Kaduna',shop:'Shop',about:'About us',love:'Customer love',help:'Delivery and returns',contact:'Contact',cart:'Your cart',privacy:'Privacy and terms',admin:'Owner dashboard'};
+let CUR='home';
+function parseRoute(){const h=location.hash||'';
+  let m=h.match(/^#\/order\/([0-9a-f-]{36})$/i)||h.match(/^#order=([0-9a-f-]{36})$/i);if(m)return{page:'cart',token:m[1]};
+  m=h.match(/^#\/([a-z]+)$/);if(m&&PAGES[m[1]]&&m[1]!=='home')return{page:m[1]};
+  const old={'#shop':'shop','#about':'about','#love':'love','#help':'help','#contact':'contact','#legal':'privacy','#cart':'cart'};
+  return{page:old[h]||'home'}}
+function route(){const r=parseRoute();hideAll();CUR=r.page;
+  document.querySelectorAll('[data-view]').forEach(v=>{v.hidden=v.dataset.view!==CUR});
+  const cur='#/'+CUR;document.querySelectorAll('nav.main a,#mobnav a').forEach(a=>{const h=a.getAttribute('href');if(h===cur||(CUR==='home'&&h==='#/'))a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  $('#mobnav').hidden=true;$('#menuBtn').setAttribute('aria-expanded','false');
+  document.title=CUR==='home'?PAGES.home:PAGES[CUR]+' | X and O';
+  scrollTo(0,0);
+  if(CUR==='cart'){if(r.token&&BE)showTrack(r.token);else renderCart()}
+  if(CUR==='admin'){if(S.canEdit){renderAdmin();loadExtras()}else if(BE)renderLogin();else $('#admin').innerHTML='<div class="head"><div><span class="eyebrow">Owner dashboard</span><h1 class="h2like">Sign in</h1></div></div><div class="note" style="max-width:560px"><b>The login is not connected yet.</b><br>This copy of the site is running in demo mode. To switch on the owner login, product uploads and business records, create the Supabase project and put its URL and key in <code>web/config.js</code> (steps are in README.md).</div>'}
+  const h=document.querySelector('[data-view="'+CUR+'"] h1');if(h){h.tabIndex=-1;h.focus({preventScroll:true})}}
+addEventListener('hashchange',route);
+
+/* ---------- boot ---------- */
+function paint(){const md=$('#mobDash');if(md)md.firstChild.textContent=S.canEdit?'Owner dashboard':'Owner login';const lb=$('#loginBtn');if(lb)lb.hidden=!!S.canEdit;renderHero();renderHome();renderFilters();renderGrid();renderLove();renderCartCount();if(S.sel&&$('#pdp').classList.contains('on'))renderPdp();if(CUR==='admin'&&S.canEdit&&!S.form&&S.adminTab!=='delivery')renderAdmin()}
+['#heroWa','#contactWa','#fab'].forEach(s=>$(s).href=wa('Hello X and O, I would like to ask about your jilbabs and hijabs.'));
+paint();route();
+(async()=>{
+  if(BE)return bootLive();
+  const cl=window.claude;if(!cl||!cl.use)return;
+  try{const u=await cl.use('user');S.canEdit=!!(u&&await u.canEdit());$('#ownerBtn').hidden=!S.canEdit;S.uid=u?await u.id():null}catch(e){}
+  try{S.assets=await cl.use('assets')}catch(e){}
+  try{S.db=await cl.use('db')}catch(e){}
+  if(!S.db)return;
+  const sub=(name,key,sort)=>{try{S.db.collection(name).onSnapshot(s=>{S[key]=s.docs.map(d=>({id:d.id,...d.data()}));if(sort)S[key].sort(sort);paint()},()=>{})}catch(e){}};
+  sub('products','products',(a,b)=>(b.createdAt||0)-(a.createdAt||0));sub('reviews','reviews');
+  try{S.db.collection('orders').onSnapshot(s=>{S.orders=[];s.docs.forEach(d=>{const v=d.data()||{};Object.keys(v).forEach(k=>{if(v[k]&&typeof v[k]==='object')S.orders.push({...v[k],id:k,uid:d.id})})});paint()},()=>{})}catch(e){}
+  try{S.db.doc('settings/delivery').onSnapshot(s=>{S.dlv=s.exists?s.data():{};syncOrderLink()},()=>{})}catch(e){}
+  try{S.db.doc('settings/payment').onSnapshot(s=>{S.pay=s.exists?s.data():{};if(CUR==='cart')renderCart()},()=>{})}catch(e){}
+sub('shots','shots',(a,b)=>(b.createdAt||0)-(a.createdAt||0));
+})();
+</script>
+</body></html>
