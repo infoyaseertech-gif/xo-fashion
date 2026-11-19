@@ -17,7 +17,7 @@
     async getOrder(t){const o=DB.orders.find(x=>x.token===t);if(!o)return null;return{order_id:o.id,order_no:o.no,status:o.status,payment_method:o.method==='paystack'?'paystack':o.method,customer_name:o.cust.name,state:o.cust.state,subtotal_ngn:o.sub,delivery_fee_ngn:o.fee,total_ngn:o.total,expires_at:new Date(Date.now()+36e5).toISOString(),receipt_uploaded:!!o.receipt,bank:o.status==='awaiting_payment'&&o.method!=='paystack'?{bank:'Test Bank',account_name:'X and O',account_number:'0123456789'}:null,items:o.items}},
     async payByCard(t){DB.calls.push(['card',t]);return'https://paystack.test/pay'},
     async sendReceipt(t,oid,f){DB.orders.find(x=>x.id===oid).receipt='x';DB.calls.push(['receipt',oid])},
-    async review(t,i,st,n,c,sz){DB.calls.push(['review',i,st]);},
+    async confirmReceived(t){const o=DB.orders.find(x=>x.token===t);if(!o)throw new Error('not_found');if(o.status!=='shipped')throw new Error('not_shipped');o.status='delivered';DB.calls.push(['received',t])},async review(t,i,st,n,c,sz){DB.calls.push(['review',i,st]);},
     async signIn(e,p){if(p==='ok'){DB.admin=true;return true}throw new Error('bad')},async signOut(){DB.admin=false},async isAdmin(){return DB.admin},
     async setStatus(id,st){const o=DB.orders.find(x=>x.id===id);o.status=st;DB.calls.push(['status',id,st])},async receiptUrl(){return'about:blank'},
     async upload(){return{url:'https://x.test/a.jpg',type:'image'}},async saveProduct(d,id){DB.calls.push(['save',d.name,Object.keys(d.stock).length])},async deleteProduct(){return'deleted'},

@@ -50,6 +50,7 @@
       const up = await sb.storage.from('receipts').upload(path, file, { contentType: file.type, upsert: false }); if (up.error) throw up.error;
       ok(await sb.rpc('attach_receipt', { p_token: token, p_path: path }));
     },
+    async confirmReceived(token) { ok(await sb.rpc('confirm_received', { p_token: token })); },
     async review(token, itemId, stars, name, comment, size) { return ok(await sb.rpc('submit_review', { p_token: token, p_order_item: itemId, p_stars: stars, p_name: name, p_comment: comment, p_size_feedback: size || null })); },
     async notifyMe(variantId, phone) { ok(await sb.rpc('request_restock_notice', { p_variant: variantId, p_phone: phone })); },
 

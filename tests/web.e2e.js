@@ -24,7 +24,7 @@ const srv=http.createServer((q,r)=>{let f=q.url.split('?')[0].replace(/^\//,'')|
   await pg.evaluate(()=>hideAll());await pg.evaluate(()=>{});await pg.click('#grid .card');await pg.waitForSelector('#pdp.on');
   ok('review form replaced by notice',!(await pg.locator('#revForm').count()));
   await pg.click('[data-act=size][data-v="54"]');await pg.click('[data-act=add]');
-  await pg.evaluate(()=>hideAll());await pg.click('[data-act=cart]');await pg.waitForSelector('#cart #placeOrder');ok('cart is its own page',(await pg.evaluate(()=>location.hash))==='#/cart'&&await vis()==='cart');
+  await pg.evaluate(()=>hideAll());await pg.click('.cartpill:visible, #tabCart:visible');await pg.waitForSelector('#cart #placeOrder');ok('cart is its own page',(await pg.evaluate(()=>location.hash))==='#/cart'&&await vis()==='cart');
   await pg.click('#placeOrder');ok('empty form blocked',(await pg.textContent('#cErr')).includes('fill in'));
   await pg.fill('#cName','Aisha Bello');await pg.fill('#cPhone','08030000000');await pg.selectOption('#cState','Kaduna');await pg.fill('#cAddr','12 Test Road, Kaduna');
   ok('delivery estimate shown',(await pg.textContent('#dlvNote')).includes('3,000'));

@@ -17,7 +17,7 @@ tests/      SQL tests, backend unit test, browser test
 - Prices are always computed in the database. Customers cannot read orders; the owner signs in (the **Login** button).
 
 ## Go live (about 30 minutes)
-1. **Supabase**: create a project. SQL Editor: run `supabase/migrations/001_init.sql`, then `002_variant_order.sql`, then `003_profit_records.sql` (cost prices and expenses; owner-only).
+1. **Supabase**: create a project. SQL Editor: run `supabase/migrations/001_init.sql`, then `002_variant_order.sql`, then `003_profit_records.sql` (cost prices and expenses; owner-only), then `004_delivery_and_reviews.sql` (customer confirms receipt, then reviews).
 2. Authentication -> Users -> Add user (the owner's email and password). Then in SQL Editor:
    `insert into admin_users(user_id, role) values ('<that user id>', 'owner');`
 3. `web/config.js`: paste the project URL and the anon/publishable key (Project Settings -> API). Never the service_role key.

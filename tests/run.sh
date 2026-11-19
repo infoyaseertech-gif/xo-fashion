@@ -81,4 +81,21 @@ as anon '' "select place_order('[{\"variant_id\":\"$VM\",\"qty\":1}]'::jsonb,'$C
 ok "order item snapshots cost" "$(q -c "select unit_cost_ngn from order_items order by (select created_at from orders o where o.id=order_id) desc limit 1")" "15000"
 q -c "update product_costs set cost_ngn=99999" >/dev/null
 ok "cost snapshot unchanged after cost edit" "$(q -c "select count(*) from order_items where unit_cost_ngn=15000")" "1"
+
+# 004: customer confirms receipt, then reviews
+q -c "update variants set stock=5" >/dev/null
+R4=$(as anon '' "select place_order('[{\"variant_id\":\"$VM\",\"qty\":1}]'::jsonb,'$CUST'::jsonb,'transfer')")
+T4=$(echo "$R4" | grep -o '"token": *"[^"]*"' | head -1 | sed 's/.*"\([^"]*\)"$/\1/')
+has "confirm before shipping rejected" "$(as anon '' "select confirm_received('$T4')")" "not_shipped"
+OID=$(q -c "select id from orders where public_token='$T4'"); OI4=$(q -c "select id from order_items where order_id='$OID'")
+as authenticated $ADMIN "select admin_set_status('$OID','paid')" >/dev/null
+as authenticated $ADMIN "select admin_set_status('$OID','shipped','GIG','777')" >/dev/null
+has "shipped_at stamped" "$(q -c "select shipped_at is not null from orders where id='$OID'")" "^t$"
+has "get_order shows not reviewed" "$(as anon '' "select get_order('$T4')")" "\"reviewed\": false"
+has "review before receipt rejected" "$(as anon '' "select submit_review('$T4','$OI4',5,'Aisha','Lovely','true_to_size')")" "not_eligible"
+has "customer confirms receipt" "$(as anon '' "select confirm_received('$T4')"; q -c "select status from orders where id='$OID'")" "delivered"
+has "delivered_at stamped" "$(q -c "select delivered_at is not null from orders where id='$OID'")" "^t$"
+has "wrong token cannot confirm" "$(as anon '' "select confirm_received('11111111-1111-1111-1111-111111111111')")" "not_found"
+has "review now accepted" "$(as anon '' "select submit_review('$T4','$OI4',5,'Aisha','Lovely','true_to_size')")" "[0-9a-f]\{8\}-"
+has "get_order shows reviewed" "$(as anon '' "select get_order('$T4')")" "\"reviewed\": true"
 echo; echo "PASS=$PASS FAIL=$FAIL"
