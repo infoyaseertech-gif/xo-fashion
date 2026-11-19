@@ -65,4 +65,20 @@ ok "expiry marks expired" "$(q -c "select count(*) from orders where status='exp
 R3=$(as anon '' "select place_order('[{\"variant_id\":\"$VM\",\"qty\":1}]'::jsonb,'$CUST'::jsonb,'paystack')")
 NO=$(q -c "select order_no from orders where status='awaiting_payment' limit 1")
 has "wrong amount flagged not paid" "$(as service_role '' "select confirm_paystack_payment($NO,'ref1',1)"; q -c "select status from orders where order_no=$NO")" "needs_review\|awaiting"
+
+# 003: profit and records
+PID=$(q -c "select id from products limit 1")
+has "anon cannot read product_costs" "$(as anon '' "select count(*) from product_costs")" "denied"
+has "anon cannot read expenses" "$(as anon '' "select count(*) from expenses")" "denied"
+has "customer cannot read expenses" "$(as authenticated $USER "select count(*) from expenses")" "^0$"
+has "customer cannot write costs" "$(as authenticated $USER "insert into product_costs values ('$PID',100)")" "row-level\|denied"
+has "admin can set cost" "$(as authenticated $ADMIN "insert into product_costs values ('$PID',15000) returning cost_ngn")" "15000"
+has "admin can add expense" "$(as authenticated $ADMIN "insert into expenses(category,amount_ngn,note) values ('Packaging',2000,'bags') returning amount_ngn")" "2000"
+has "bad expense category rejected" "$(as authenticated $ADMIN "insert into expenses(category,amount_ngn) values ('Beer',5)")" "error\|violates"
+has "zero expense rejected" "$(as authenticated $ADMIN "insert into expenses(category,amount_ngn) values ('Other',0)")" "error\|violates"
+q -c "update variants set stock=5" >/dev/null
+as anon '' "select place_order('[{\"variant_id\":\"$VM\",\"qty\":1}]'::jsonb,'$CUST'::jsonb,'transfer')" >/dev/null
+ok "order item snapshots cost" "$(q -c "select unit_cost_ngn from order_items order by (select created_at from orders o where o.id=order_id) desc limit 1")" "15000"
+q -c "update product_costs set cost_ngn=99999" >/dev/null
+ok "cost snapshot unchanged after cost edit" "$(q -c "select count(*) from order_items where unit_cost_ngn=15000")" "1"
 echo; echo "PASS=$PASS FAIL=$FAIL"

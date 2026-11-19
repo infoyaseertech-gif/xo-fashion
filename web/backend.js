@@ -27,8 +27,12 @@
     async zones() { const m = {}; ok(await sb.from('delivery_zones').select('*')).forEach((z) => { if (z.fee_ngn != null || z.days != null) m[z.state] = { fee: z.fee_ngn || 0, days: z.days || 0 }; }); return m; },
     async orders() {
       const rows = ok(await sb.from('orders').select('*, order_items(*)').order('created_at', { ascending: false }).limit(300));
-      return rows.map((o) => ({ id: o.id, no: o.order_no, status: o.status, method: o.payment_method, createdAt: Date.parse(o.created_at), total: o.total_ngn, receipt: o.receipt_path, courier: o.courier, tracking: o.tracking_no, customer: { name: o.customer_name, phone: o.phone, state: o.state, address: o.address, email: o.email }, paidAt: o.paid_at ? Date.parse(o.paid_at) : null, items: (o.order_items || []).map((i) => ({ name: i.product_name, colour: i.colour_name, size: i.size, n: i.qty, price: i.unit_price_ngn })) }));
+      return rows.map((o) => ({ id: o.id, no: o.order_no, status: o.status, method: o.payment_method, createdAt: Date.parse(o.created_at), total: o.total_ngn, receipt: o.receipt_path, courier: o.courier, tracking: o.tracking_no, customer: { name: o.customer_name, phone: o.phone, state: o.state, address: o.address, email: o.email }, paidAt: o.paid_at ? Date.parse(o.paid_at) : null, items: (o.order_items || []).map((i) => ({ name: i.product_name, colour: i.colour_name, size: i.size, n: i.qty, price: i.unit_price_ngn, cost: i.unit_cost_ngn })) }));
     },
+    async costs() { const m = {}; ok(await sb.from('product_costs').select('*')).forEach((r) => { m[r.product_id] = r.cost_ngn; }); return m; },
+    async expenses() { return ok(await sb.from('expenses').select('*').order('spent_on', { ascending: false }).limit(500)).map((e) => ({ id: e.id, date: e.spent_on, cat: e.category, note: e.note, amt: e.amount_ngn })); },
+    async addExpense(x) { const e = ok(await sb.from('expenses').insert({ spent_on: x.date, category: x.cat, note: x.note, amount_ngn: x.amt }).select('*').single()); return { id: e.id, date: e.spent_on, cat: e.category, note: e.note, amt: e.amount_ngn }; },
+    async deleteExpense(id) { ok(await sb.from('expenses').delete().eq('id', id)); },
     async stockLog() { return ok(await sb.from('stock_log').select('delta,reason,created_at,variants(colour_name,size,products(name))').order('created_at', { ascending: false }).limit(100)).map((l) => ({ at: Date.parse(l.created_at), delta: l.delta, reason: l.reason, item: ((l.variants && l.variants.products && l.variants.products.name) || '') + ' · ' + ((l.variants && l.variants.colour_name) || '') + ' ' + ((l.variants && l.variants.size) || '') })); },
     async restocks() { return ok(await sb.from('notify_requests').select('phone,created_at,variants(colour_name,size,products(name))').order('created_at', { ascending: false }).limit(100)).map((r) => ({ phone: r.phone, item: ((r.variants && r.variants.products && r.variants.products.name) || '') + ' · ' + ((r.variants && r.variants.colour_name) || '') + ' ' + ((r.variants && r.variants.size) || '') })); },
     async bank() { const r = ok(await sb.from('settings').select('value').eq('key', 'bank').maybeSingle()); const v = (r && r.value) || {}; return { bank: v.bank || '', name: v.account_name || '', number: v.account_number || '' }; },
@@ -77,6 +81,10 @@
       }
       ok(await sb.from('media').delete().eq('product_id', pid));
       if (d.media.length) ok(await sb.from('media').insert(d.media.map((m, i) => ({ product_id: pid, colour_name: m.colour || null, kind: m.type, url: m.url, sort_order: i }))));
+      try {
+        if (d.cost != null) ok(await sb.from('product_costs').upsert({ product_id: pid, cost_ngn: d.cost }));
+        else ok(await sb.from('product_costs').delete().eq('product_id', pid));
+      } catch (e) { throw new Error('Product saved, but the cost price was not stored. Run database step 003 in Supabase.'); }
       return pid;
     },
     async deleteProduct(id) { const r = await sb.from('products').delete().eq('id', id); if (r.error) { ok(await sb.from('products').update({ active: false }).eq('id', id)); return 'hidden'; } return 'deleted'; },

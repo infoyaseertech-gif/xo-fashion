@@ -1,10 +1,8 @@
-
-// Public settings only.
-// NEVER put the service_role key or Paystack secret key here.
-
+// Public settings only. The anon/publishable key is SAFE to publish: Row Level Security protects the data.
+// NEVER put the service_role key or the Paystack secret key here.
 window.XO_CONFIG = {
-  supabaseUrl: "https://kptjeeanqcgrymzwenov.supabase.co",
-  supabaseAnonKey: "sb_publishable_Egc1Oh7T4lTu1Ni7I9z5AQ_5yhdMXSJ",
-  cardPayments: false,
+  supabaseUrl: "",        // e.g. https://abcdxyz.supabase.co
+  supabaseAnonKey: "",    // Project Settings -> API -> anon / publishable key
+  cardPayments: false,    // set true after Paystack is set up (see README)
   whatsapp: "2349093813119"
 };

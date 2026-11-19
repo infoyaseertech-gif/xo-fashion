@@ -48,10 +48,10 @@ const srv=http.createServer((q,r)=>{let f=q.url.split('?')[0].replace(/^\//,'')|
   await pg.evaluate(()=>hideAll());await pg.evaluate(()=>location.hash='#/');await pg.waitForTimeout(80);
   ok('owner login link in footer',await pg.locator('#ownLogin').isVisible());
   await pg.click('#ownLogin a');await pg.waitForSelector('#loginForm');ok('admin is its own page',await vis()==='admin');
-  await pg.fill('#lgE','a@b.com');await pg.fill('#lgP','bad');await pg.click('#loginForm button');await pg.waitForTimeout(200);
+  await pg.fill('#lgE','a@b.com');await pg.fill('#lgP','bad');await pg.click('#loginForm button[type=submit]');await pg.waitForTimeout(200);
   ok('bad login rejected',(await pg.textContent('#lgErr')).includes('Could not sign in'));
-  await pg.fill('#lgP','ok');await pg.click('#loginForm button');await pg.waitForSelector('#admin .kpis');
-  ok('mobile menu has dashboard link when signed in',(await pg.textContent('#mobDash')).includes('Owner dashboard'));
+  await pg.fill('#lgP','ok');await pg.click('#loginForm button[type=submit]');await pg.waitForSelector('#admin .kpis');
+  ok('mobile menu has dashboard link when signed in',(await pg.textContent('#mobDash')).includes('Dashboard'));
   ok('overview is the landing tab',(await pg.textContent('#admin')).includes('Total sales'));
   ok('add product button on overview',await pg.locator('[data-act=qadd]').isVisible());
   ok('awaiting payment KPI counts the order',(await pg.locator('.kpi',{hasText:'Awaiting payment'}).textContent()).includes('1'));
@@ -67,7 +67,7 @@ const srv=http.createServer((q,r)=>{let f=q.url.split('?')[0].replace(/^\//,'')|
   await pg.click('[data-act=atab][data-v=customers]');ok('customers tab lists buyer',(await pg.textContent('#admin')).includes('Aisha Bello')&&(await pg.textContent('#admin')).includes('₦37,000'));
   await pg.click('[data-act=atab][data-v=inventory]');await pg.waitForTimeout(150);ok('stock tab shows stock + movements + restock',(await pg.textContent('#admin')).includes('Units in stock')&&(await pg.textContent('#admin')).includes('Stock movements')&&(await pg.textContent('#admin')).includes('08031112222'));
   await pg.click('[data-act=atab][data-v=reports]');ok('reports count paid order',(await pg.textContent('#admin')).includes('₦37,000'));
-  await pg.click('[data-act=signout]');await pg.waitForTimeout(100);ok('signed out hides owner button and leaves admin',await pg.locator('#ownerBtn').isHidden()&&await vis()==='home');
+  await pg.click('[data-act=signout]');await pg.waitForTimeout(100);ok('signed out shows Login and leaves admin',(await pg.locator('#ownerBtn').textContent())==='Login'&&await vis()==='home');
   await pg.evaluate(()=>location.hash='#/admin');await pg.waitForTimeout(100);ok('admin page asks for login again',await pg.locator('#loginForm').count()===1);
   ok('no page errors',errs.length===0,errs.join('|'));await pg.close()}
  await b.close();srv.close();console.log('PASS='+pass+' FAIL='+fail);process.exit(fail?1:0)})();

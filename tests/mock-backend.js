@@ -1,14 +1,14 @@
 // Test double for window.XO_BE: same method names as web/backend.js, in-memory data, same rules as the SQL.
 (function(){
   const mk=(id,name,cat,origin,price,cols,sizes,stock)=>{const colours=cols.map(([n,h])=>({name:n,hex:h}));const st={},vid={};colours.forEach(c=>sizes.forEach(s=>{st[c.name+'|'+s]=stock[c.name+'|'+s]??0;vid[c.name+'|'+s]='v-'+id+'-'+c.name+'-'+s}));
-    return{id,name,category:cat,origin,price,fabric:'Soft',desc:'Nice',colours,sizes,stock:st,vid,media:[],active:true,createdAt:Date.now()}};
+    return{id,name,category:cat,origin,price,fabric:'Soft',desc:'Nice',colours,sizes,stock:st,vid,media:id==='p1'?[1,2,3].map(n=>({type:'image',url:'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="40" height="50"><rect width="40" height="50" fill="hsl('+n*90+',50%,70%)"/></svg>'),colour:''})):[],active:true,createdAt:Date.now()}};
   const DB={products:[mk('p1','Classic Jilbab','Jilbab','Egypt',34000,[['Black','#231c1c'],['Pink','#e8a1b5']],['54','56'],{'Black|54':3,'Black|56':0,'Pink|54':1,'Pink|56':5})],orders:[],reviews:[],zones:{Kaduna:{fee:3000,days:3}},admin:false,calls:[]};
   window.__DB=DB;
   const find=v=>{for(const p of DB.products)for(const k in p.vid)if(p.vid[k]===v)return[p,k]};
   window.XO_BE={cardEnabled:true,
     async products(){return JSON.parse(JSON.stringify(DB.products))},async reviews(){return DB.reviews.filter(r=>r.approved||DB.admin)},async shots(){return[]},async zones(){return DB.zones},
     async orders(){return DB.orders.map(o=>({id:o.id,no:o.no,status:o.status,method:o.method,createdAt:o.createdAt,total:o.total,receipt:o.receipt,customer:{name:o.cust.name,phone:o.cust.phone,state:o.cust.state},items:o.items.map(i=>({name:i.name,colour:i.colour,size:i.size,n:i.qty}))}))},
-    async stockLog(){return[{at:Date.now(),delta:-2,reason:'order',item:'Classic Jilbab · Black 54'}]},async restocks(){return[{phone:'08031112222',item:'Classic Jilbab · Black 56'}]},async bank(){return{bank:'Test Bank',name:'X and O',number:'0123456789'}},watchStock(){},
+    _exp:[],async costs(){return{}},async expenses(){return this._exp},async addExpense(x){const r={...x,id:'e'+(this._exp.length+1)};this._exp.push(r);return r},async deleteExpense(id){this._exp=this._exp.filter(e=>e.id!==id)},async stockLog(){return[{at:Date.now(),delta:-2,reason:'order',item:'Classic Jilbab · Black 54'}]},async restocks(){return[{phone:'08031112222',item:'Classic Jilbab · Black 56'}]},async bank(){return{bank:'Test Bank',name:'X and O',number:'0123456789'}},watchStock(){},
     async placeOrder(items,cust,method){DB.calls.push(['place',method]);
       for(const it of items){const[p,k]=find(it.variant_id)||[];if(!p)throw new Error('unavailable');if(p.stock[k]<it.qty)throw new Error('out_of_stock:'+it.variant_id)}
       let sub=0;const its=items.map((it,i)=>{const[p,k]=find(it.variant_id);p.stock[k]-=it.qty;sub+=p.price*it.qty;const[c,s]=k.split('|');return{item_id:'i'+i,name:p.name,colour:c,size:s,qty:it.qty,unit_price_ngn:p.price}});
