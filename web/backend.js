@@ -26,9 +26,25 @@
     async shots() { return ok(await sb.from('testimonials').select('*').order('created_at', { ascending: false })).map((t) => ({ id: t.id, url: t.image_url, createdAt: Date.parse(t.created_at) })); },
     async zones() { const m = {}; ok(await sb.from('delivery_zones').select('*')).forEach((z) => { if (z.fee_ngn != null || z.days != null) m[z.state] = { fee: z.fee_ngn || 0, days: z.days || 0 }; }); return m; },
     async orders() {
-      const rows = ok(await sb.from('orders').select('*, order_items(*)').order('created_at', { ascending: false }).limit(300));
-      return rows.map((o) => ({ id: o.id, no: o.order_no, status: o.status, method: o.payment_method, createdAt: Date.parse(o.created_at), total: o.total_ngn, receipt: o.receipt_path, courier: o.courier, tracking: o.tracking_no, customer: { name: o.customer_name, phone: o.phone, state: o.state, address: o.address, email: o.email }, paidAt: o.paid_at ? Date.parse(o.paid_at) : null, items: (o.order_items || []).map((i) => ({ name: i.product_name, colour: i.colour_name, size: i.size, n: i.qty, price: i.unit_price_ngn, cost: i.unit_cost_ngn })) }));
+      // Falls back to plain orders if database step 005 (messages) has not been run yet.
+      let r = await sb.from('orders').select('*, order_items(*), order_messages(*)').order('created_at', { ascending: false }).limit(300);
+      if (r.error) r = await sb.from('orders').select('*, order_items(*)').order('created_at', { ascending: false }).limit(300);
+      const rows = ok(r);
+      let rv = new Set();
+      try { rv = new Set(ok(await sb.from('reviews').select('order_item_id').not('order_item_id', 'is', null)).map((r) => r.order_item_id)); } catch (e) { /* reviews list optional */ }
+      return rows.map((o) => ({ id: o.id, no: o.order_no, status: o.status, method: o.payment_method, createdAt: Date.parse(o.created_at), total: o.total_ngn, receipt: o.receipt_path, courier: o.courier, tracking: o.tracking_no, customer: { name: o.customer_name, phone: o.phone, state: o.state, address: o.address, email: o.email }, paidAt: o.paid_at ? Date.parse(o.paid_at) : null, msgs: (o.order_messages || []).slice().sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at)).map((m) => ({ from: m.sender, text: m.body, at: Date.parse(m.created_at) })),
+        unread: (o.order_messages || []).some((m) => m.sender === 'customer' && (!o.owner_read_at || Date.parse(m.created_at) > Date.parse(o.owner_read_at))),
+        open: !['cancelled', 'expired'].includes(o.status) && !(o.status === 'delivered' && (o.order_items || []).every((i) => rv.has(i.id))),
+        items: (o.order_items || []).map((i) => ({ name: i.product_name, colour: i.colour_name, size: i.size, n: i.qty, price: i.unit_price_ngn, cost: i.unit_cost_ngn })) }));
     },
+    async postMessage(token, body) { ok(await sb.rpc('post_order_message', { p_token: token, p_body: body })); },
+    async cancelMine(token) { ok(await sb.rpc('cancel_my_order', { p_token: token })); },
+    async adminMessage(id, body) { ok(await sb.rpc('admin_post_message', { p_order: id, p_body: body })); },
+    async markRead(id) { ok(await sb.rpc('admin_mark_read', { p_order: id })); },
+    async deleteOrder(id) { ok(await sb.rpc('admin_delete_order', { p_order: id })); },
+    async deleteCustomer(phone) { return ok(await sb.rpc('admin_delete_customer', { p_phone: phone })); },
+    async clearData(scope) { ok(await sb.rpc('admin_clear_data', { p_scope: scope })); },
+    watchOrders(fn) { let t; const go = () => { clearTimeout(t); t = setTimeout(fn, 500); }; sb.channel('orders-live').on('postgres_changes', { event: '*', schema: 'public', table: 'order_messages' }, go).on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, go).subscribe(); },
     async costs() { const m = {}; ok(await sb.from('product_costs').select('*')).forEach((r) => { m[r.product_id] = r.cost_ngn; }); return m; },
     async expenses() { return ok(await sb.from('expenses').select('*').order('spent_on', { ascending: false }).limit(500)).map((e) => ({ id: e.id, date: e.spent_on, cat: e.category, note: e.note, amt: e.amount_ngn })); },
     async addExpense(x) { const e = ok(await sb.from('expenses').insert({ spent_on: x.date, category: x.cat, note: x.note, amount_ngn: x.amt }).select('*').single()); return { id: e.id, date: e.spent_on, cat: e.category, note: e.note, amt: e.amount_ngn }; },

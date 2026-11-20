@@ -98,4 +98,59 @@ has "delivered_at stamped" "$(q -c "select delivered_at is not null from orders 
 has "wrong token cannot confirm" "$(as anon '' "select confirm_received('11111111-1111-1111-1111-111111111111')")" "not_found"
 has "review now accepted" "$(as anon '' "select submit_review('$T4','$OI4',5,'Aisha','Lovely','true_to_size')")" "[0-9a-f]\{8\}-"
 has "get_order shows reviewed" "$(as anon '' "select get_order('$T4')")" "\"reviewed\": true"
+
+# 005: conversation, cancel, owner deletion
+q -c "update variants set stock=5" >/dev/null
+R5=$(as anon '' "select place_order('[{\"variant_id\":\"$VM\",\"qty\":2}]'::jsonb,'$CUST'::jsonb,'transfer')")
+T5=$(echo "$R5" | grep -o '"token": *"[^"]*"' | head -1 | sed 's/.*"\([^"]*\)"$/\1/')
+O5=$(q -c "select id from orders where public_token='$T5'")
+has "customer can message own order" "$(as anon '' "select post_order_message('$T5','Hello, is my order ready?')")" "[0-9a-f]\{8\}-"
+has "wrong token cannot message" "$(as anon '' "select post_order_message('11111111-1111-1111-1111-111111111111','hi')")" "not_found"
+has "empty message rejected" "$(as anon '' "select post_order_message('$T5','   ')")" "bad_message"
+has "anon cannot read messages table" "$(as anon '' "select count(*) from order_messages")" "denied"
+has "customer cannot read messages table" "$(as authenticated $USER "select count(*) from order_messages")" "^0$"
+has "admin reads messages" "$(as authenticated $ADMIN "select count(*) from order_messages where order_id='$O5'")" "^1$"
+has "customer cannot post as owner" "$(as anon '' "select admin_post_message('$O5','hi')")" "forbidden\|denied"
+has "non-admin cannot post as owner" "$(as authenticated $USER "select admin_post_message('$O5','hi')")" "forbidden"
+has "owner replies" "$(as authenticated $ADMIN "select admin_post_message('$O5','Yes, packing now')")" "[0-9a-f]\{8\}-"
+has "customer sees both messages" "$(as anon '' "select jsonb_array_length(get_order('$T5')->'messages')")" "^2$"
+has "order is open" "$(as anon '' "select get_order('$T5')->>'is_open'")" "true"
+as authenticated $ADMIN "select admin_set_status('$O5','paid')" >/dev/null
+has "status change adds a system note" "$(q -c "select count(*) from order_messages where order_id='$O5' and sender='system'")" "^1$"
+ok "stock held 5->3" "$(q -c "select stock from variants where id='$VM'")" "3"
+has "customer cancels paid order" "$(as anon '' "select cancel_my_order('$T5')"; q -c "select status from orders where id='$O5'")" "cancelled"
+ok "cancel returns stock 3->5" "$(q -c "select stock from variants where id='$VM'")" "5"
+has "cancelled order is closed" "$(as anon '' "select get_order('$T5')->>'is_open'")" "false"
+has "closed order rejects messages" "$(as anon '' "select post_order_message('$T5','still there?')")" "closed"
+has "cancel note says customer" "$(q -c "select body from order_messages where order_id='$O5' and body like '%cancelled%'")" "customer cancelled"
+has "cannot cancel shipped order" "$(as anon '' "select cancel_my_order('$T4')")" "not_cancellable\|not_found"
+# open until reviewed
+R6=$(as anon '' "select place_order('[{\"variant_id\":\"$VM\",\"qty\":1}]'::jsonb,'$CUST'::jsonb,'transfer')")
+T6=$(echo "$R6" | grep -o '"token": *"[^"]*"' | head -1 | sed 's/.*"\([^"]*\)"$/\1/')
+O6=$(q -c "select id from orders where public_token='$T6'"); OI6=$(q -c "select id from order_items where order_id='$O6'")
+as authenticated $ADMIN "select admin_set_status('$O6','paid')" >/dev/null
+as authenticated $ADMIN "select admin_set_status('$O6','shipped','GIG','9')" >/dev/null
+as anon '' "select confirm_received('$T6')" >/dev/null
+has "delivered but unreviewed stays open" "$(as anon '' "select get_order('$T6')->>'is_open'")" "true"
+as anon '' "select submit_review('$T6','$OI6',5,'Aisha','Lovely dress','true_to_size')" >/dev/null
+has "delivered and reviewed closes" "$(as anon '' "select get_order('$T6')->>'is_open'")" "false"
+# deletion
+has "customer cannot delete order" "$(as anon '' "select admin_delete_order('$O6')")" "forbidden\|denied"
+has "non-owner cannot clear data" "$(as authenticated $USER "select admin_clear_data('all')")" "forbidden"
+has "bad scope rejected" "$(as authenticated $ADMIN "select admin_clear_data('everything')")" "bad_scope"
+q -c "update variants set stock=5" >/dev/null
+R7=$(as anon '' "select place_order('[{\"variant_id\":\"$VM\",\"qty\":2}]'::jsonb,'$CUST'::jsonb,'transfer')")
+ok "stock held 5->3 before delete" "$(q -c "select stock from variants where id='$VM'")" "3"
+O7=$(q -c "select id from orders where status='awaiting_payment' limit 1")
+as authenticated $ADMIN "select admin_delete_order('$O7')" >/dev/null
+ok "owner delete order restores stock" "$(q -c "select stock from variants where id='$VM'")" "5"
+ok "deleted order is gone" "$(q -c "select count(*) from orders where id='$O7'")" "0"
+has "products cleared only after orders" "$(as authenticated $ADMIN "select admin_clear_data('products')")" "delete_orders_first"
+as authenticated $ADMIN "select admin_clear_data('orders')" >/dev/null
+ok "clear orders empties orders, items, messages" "$(q -c "select (select count(*) from orders)+(select count(*) from order_items)+(select count(*) from order_messages)")" "0"
+ok "clear orders keeps products" "$(q -c "select count(*) from products")" "1"
+as authenticated $ADMIN "select admin_clear_data('all')" >/dev/null
+ok "clear all empties products" "$(q -c "select count(*) from products")" "0"
+ok "clear all keeps delivery zones" "$(q -c "select count(*) from delivery_zones")" "37"
+ok "clear all keeps owner login" "$(q -c "select count(*) from admin_users")" "1"
 echo; echo "PASS=$PASS FAIL=$FAIL"

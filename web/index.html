@@ -355,6 +355,54 @@ nav.mob a{padding:1rem 0}
 .steps small{display:block;font-weight:400;font-size:.7rem;opacity:.8}
 .recvbox{border:1.5px solid var(--pink);background:var(--surface);border-radius:18px;padding:1.1rem;margin:1rem 0}
 .recvbox h3{margin:0 0 .3rem!important}
+
+/* --- v5: conversation, order cards, mobile --- */
+.thread{display:flex;flex-direction:column;gap:.45rem;max-height:340px;overflow-y:auto;padding:.7rem;border:1px solid var(--line);border-radius:16px;background:var(--surface);margin:.5rem 0 .7rem}
+.thread:empty::before{content:"No messages yet. Say hello.";color:var(--muted);font-size:.9rem}
+.msg{max-width:84%;padding:.5rem .8rem;border-radius:16px;font-size:.95rem;line-height:1.4;overflow-wrap:anywhere}
+.msg small{display:block;font-size:.68rem;opacity:.7;margin-top:.15rem}
+.msg.me{align-self:flex-end;background:var(--brown);color:var(--on-brown);border-bottom-right-radius:4px}
+.msg.them{align-self:flex-start;background:var(--blush);color:var(--ink);border-bottom-left-radius:4px}
+.msg.sys{align-self:center;background:transparent;color:var(--muted);font-size:.8rem;text-align:center;padding:.1rem .4rem}
+#msgForm,.ochat{display:grid;gap:.5rem}
+#msgForm textarea,.ochat textarea{width:100%;min-height:64px;resize:vertical}
+.openbar{border-radius:14px;padding:.7rem .9rem;margin:.6rem 0;font-size:.92rem;border:1px solid var(--line);background:var(--surface)}
+.openbar.on{border-color:#6aa98a}.openbar.off{opacity:.85}
+.cancelbox{border-top:1px solid var(--line);margin-top:1.4rem;padding-top:1rem}
+.btn.danger{background:var(--crit);color:#fff;border-color:var(--crit)}
+.ocard{border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:1rem;margin-bottom:1rem}
+.ocard.unread{border-color:var(--pink);box-shadow:0 0 0 3px rgba(217,139,162,.25)}
+.oh{display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:.6rem}
+.ob{display:grid;grid-template-columns:1fr 1fr;gap:1rem;font-size:.93rem}
+.ob .lbl2{display:block;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.15rem}
+.otot{display:flex;justify-content:space-between;border-top:1px dashed var(--line);margin-top:.7rem;padding-top:.6rem}
+.oacts{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.7rem}
+.pill.on{background:#d6efe1;color:#14532d}.pill.off{background:#e8e4e1;color:#57504c}.pill.new{background:var(--pink);color:#fff}
+details.chat{margin-top:.8rem;border:1px solid var(--line);border-radius:14px;padding:.2rem .8rem .8rem}
+details.chat summary{cursor:pointer;font-weight:600;padding:.6rem 0;min-height:44px;display:flex;align-items:center}
+.ccard{border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:.9rem;margin-bottom:.8rem;display:grid;gap:.3rem}
+.dz{border:1.5px solid var(--crit);border-radius:16px;padding:1rem;margin-top:2rem}
+.dz h3{color:var(--crit)}
+html,body{max-width:100%;overflow-x:hidden}
+body[data-page=admin] .fab,body[data-page=cart] .fab{display:none}
+#admin .search{width:100%;max-width:100%}
+#admin .tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:.4rem;scrollbar-width:thin}
+#admin .tabs .chip{flex:0 0 auto;white-space:nowrap}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+@media(max-width:640px){
+ .ob{grid-template-columns:1fr}
+ .oacts .btn{flex:1 1 calc(50% - .45rem);justify-content:center;text-align:center}
+ .msg{max-width:92%}
+ #admin .tbl.stack thead{display:none}
+ #admin .tbl.stack,#admin .tbl.stack tbody,#admin .tbl.stack tr,#admin .tbl.stack td{display:block;width:100%}
+ #admin .tbl.stack tr{border:1px solid var(--line);border-radius:14px;padding:.5rem .8rem;margin-bottom:.7rem;background:var(--surface)}
+ #admin .tbl.stack td{border:0;padding:.3rem 0;display:flex;justify-content:space-between;gap:1rem;text-align:right}
+ #admin .tbl.stack td::before{content:attr(data-label);font-weight:600;color:var(--muted);text-align:left;flex:0 0 38%}
+ #admin .tbl.stack td:not([data-label])::before,#admin .tbl.stack td[data-label=""]::before{content:none}
+ #admin .two{grid-template-columns:1fr}
+ .pfrow .chip{flex:1 1 calc(50% - .5rem)}
+ .portal{margin:1rem 0}
+}
 </style>
 </head><body>
 
@@ -671,9 +719,15 @@ async function showTrack(token){const box=$('#cart');
   let o=null;try{o=await BE.getOrder(token)}catch(e){}
   if(!o){box.innerHTML=trackHead+'<div class="pad"><p>We could not find this order. Check the link, or message us on WhatsApp.</p></div>';return}
   S.track={token,o};renderTrack();
-  clearTimeout(showTrack.t);
-  if(o.status==='awaiting_payment'&&o.payment_method==='paystack')showTrack.t=setTimeout(()=>{if(CUR==='cart'&&location.hash.indexOf(token)>0&&S.track&&S.track.token===token&&!$('#cart').querySelector('input:focus'))showTrack(token)},5000)}
-function renderTrack(){const {token,o}=S.track,box=$('#cart');const b=o.bank||{};
+  S.cancelArm=false;trackPoll(token)}
+function trackPoll(token){clearTimeout(trackPoll.t);const o=S.track&&S.track.o;if(!o||!(o.is_open||o.status==='awaiting_payment'))return;
+  trackPoll.t=setTimeout(async()=>{if(CUR!=='cart'||!S.track||S.track.token!==token)return;
+    if(!document.hidden){let n=null;try{n=await BE.getOrder(token)}catch(e){}
+      if(n){const o0=S.track.o,key=x=>[x.status,x.is_open,(x.items||[]).map(i=>i.reviewed).join()].join('|'),busy=document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+        const msgsChanged=(n.messages||[]).length!==(o0.messages||[]).length;S.track.o=n;
+        if(key(n)!==key(o0)&&!busy)renderTrack();else if(msgsChanged){const t=$('#cthread');if(t){t.innerHTML=threadHtml(n.messages,'customer');t.scrollTop=t.scrollHeight}if((n.messages||[]).slice(-1)[0].from==='owner')toast('New message from X and O')}}}
+    trackPoll(token)},document.hidden?8000:6000)}
+function renderTrack(){const {token,o}=S.track,box=$('#cart');const b=o.bank||{};const draft=($('#msgIn')||{}).value||'';
   const fee=o.delivery_fee_ngn===null||o.delivery_fee_ngn===undefined?'To be confirmed on WhatsApp':naira(o.delivery_fee_ngn);
   const waMsg='Hello X and O, my order number is #'+o.order_no+'.';
   let h=trackHead+'<div class="pad trk"><p class="eyebrow">Order #'+esc(o.order_no)+'</p><h3 style="margin-top:.2rem">'+esc(STATUS[o.status]||o.status)+'</h3>'+trackSteps(o);
@@ -686,12 +740,15 @@ function renderTrack(){const {token,o}=S.track,box=$('#cart');const b=o.bank||{}
     h+=(b.account_number?'<div class="note" style="margin:.8rem 0"><b>Pay by bank transfer</b><br>'+esc(b.bank||'')+'<br>'+esc(b.account_name||'')+'<br><span style="user-select:all;font-weight:700;font-size:1.1rem">'+esc(b.account_number)+'</span><br><b>Amount: '+naira(o.total_ngn)+'</b></div>':'<div class="note" style="margin:.8rem 0">We will send you our bank details on WhatsApp.</div>')
      +'<label class="btn sm" for="recUp">Upload transfer receipt</label><input id="recUp" type="file" accept="image/*,application/pdf" hidden>'+(o.receipt_uploaded?' <span class="pill">Receipt received</span>':'')
      +' <a class="btn sm wa" target="_blank" rel="noopener" href="'+esc(wa(waMsg+' I have sent the transfer.'))+'">Tell us on WhatsApp</a>'}
+  if(o.is_open!==undefined){h+='<div class="openbar '+(o.is_open?'on':'off')+'"><b>'+(o.is_open?'This order is open.':'This order is closed.')+'</b> '+(o.is_open?'It closes when you confirm you received it and write a review, or if you cancel it.':(o.status==='cancelled'?'It was cancelled.':o.status==='expired'?'The payment time ran out.':'Thank you for your review.'))+'</div>';
+    h+='<h3>Messages with X and O</h3><div class="thread" id="cthread">'+threadHtml(o.messages,'customer')+'</div>'+(o.is_open?'<form id="msgForm"><textarea id="msgIn" maxlength="1000" placeholder="Write to us about this order…" required></textarea><button class="btn" type="submit">Send message</button></form><p class="fine" style="margin-top:.4rem">We reply here. You can also use WhatsApp.</p>':'')}
   h+='<h3>Items</h3>'+(o.items||[]).map(i=>'<div class="row"><span>'+esc(i.name)+' ('+esc(i.colour)+', '+esc(i.size)+') × '+i.qty+'</span><b>'+naira(i.qty*i.unit_price_ngn)+'</b></div>').join('')
    +'<div class="row"><span>Items total</span><b>'+naira(o.subtotal_ngn)+'</b></div><div class="row"><span>Delivery ('+esc(o.state)+')</span><b>'+esc(fee)+'</b></div><div class="row"><span>Total</span><b>'+naira(o.total_ngn)+'</b></div>';
   if(o.courier||o.tracking_no)h+='<p style="margin-top:1rem"><b>Courier:</b> '+esc(o.courier||'')+' '+esc(o.tracking_no||'')+'</p>';
   if(o.status==='delivered'){const todo=(o.items||[]).filter(i=>!i.reviewed),done=(o.items||[]).filter(i=>i.reviewed);h+='<div class="recvbox"><h3>Thank you for shopping with X and O</h3><p>Your order has been received'+(o.delivered_at?' on '+esc(fmtDay(o.delivered_at)):'')+'. We would love to hear what you think.</p></div>'+(todo.length?'<h3>Write a review</h3>':'')+done.map(i=>'<p class="stock ok">✓ Review sent for '+esc(i.name)+'. It shows on the website once approved.</p>').join('')+todo.map(i=>'<form class="trev" data-item="'+esc(i.item_id)+'" style="margin-bottom:1rem"><b>'+esc(i.name)+'</b><div class="two"><div class="field"><label>Rating</label><select name="st"><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select></div><div class="field"><label>Fit</label><select name="sz"><option value="true_to_size">True to size</option><option value="ran_small">Ran small</option><option value="ran_large">Ran large</option></select></div></div><div class="field"><label>Your name</label><input name="nm" maxlength="40" required value="'+esc(String(o.customer_name||'').split(' ')[0])+'"></div><div class="field"><label>Your review</label><textarea name="tx" required minlength="3" maxlength="500"></textarea></div><button class="btn sm" type="submit">Post review</button><span class="rvm" role="status"></span></form>').join('')}
+  if(o.cancellable)h+='<div class="cancelbox"><h3>Need to cancel?</h3>'+(['paid','packed'].includes(o.status)?'<p class="fine">You have already paid. If you cancel, we will message you here about your refund.</p>':'')+(S.cancelArm?'<button class="btn danger" data-act="cancelgo">Yes, cancel my order</button> <button class="btn ghost" data-act="cancelno">No, keep it</button>':'<button class="btn sm ghost" data-act="cancelask">Cancel this order</button>')+'</div>';
   h+='<p style="margin-top:1.5rem"><a class="btn sm ghost" target="_blank" rel="noopener" href="'+esc(wa(waMsg))+'">Message us about this order</a></p><p style="color:var(--muted);font-size:.85rem;margin-top:1rem">Keep this page link to check your order any time.</p></div>';
-  box.innerHTML=h}
+  box.innerHTML=h;const mi=$('#msgIn');if(mi&&draft)mi.value=draft;const th=$('#cthread');if(th)th.scrollTop=th.scrollHeight}
 async function refreshAll(){const[p,r,sh,z]=await Promise.all([BE.products(),BE.reviews(),BE.shots(),BE.zones()]);S.products=p;S.reviews=r;S.shots=sh;S.dlv=z;
   if(S.canEdit){S.orders=await BE.orders();S.pay=await BE.bank()}paint();if(CUR==='admin'&&S.canEdit&&!S.form&&!(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)))renderAdmin();syncOrderLink()}
 function loginCard(demo){return '<div class="portal"><aside class="pbrand"><a class="plogo" href="#/" aria-label="Back to the shop">X·O</a><div><h1>Welcome back</h1><p>Sign in to manage your collection, orders and profit in one place.</p></div><ul><li>Upload photos and videos</li><li>Orders, payments and deliveries</li><li>Profit, costs and expenses</li></ul></aside><div class="pform"><h2>Login</h2><p class="fine">'+(demo?'Login is not enabled on this preview. It is switched on when the website is connected to its database.':'Authorised staff only.')+'</p>'+(demo?'':'<form id="loginForm"><div class="field"><label for="lgE">Email address</label><span class="ifield"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><input id="lgE" type="email" autocomplete="username" required></span></div><div class="field"><label for="lgP">Password</label><span class="pw ifield"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><input id="lgP" type="password" autocomplete="current-password" required><button type="button" class="pwt" data-act="showpw" aria-label="Show password">Show</button></span></div><div class="err" id="lgErr" role="alert"></div><button class="btn" type="submit" style="width:100%">Login</button><p class="fine" style="margin-top:1rem">Forgotten your password? Ask the administrator to reset it.</p></form>')+'<a class="pback" href="#/shop">← Back to the shop</a></div></div>'}
@@ -729,7 +786,7 @@ function readForm(){const F=S.form,g=id=>$('#'+id);F.name=g('fName').value;F.cat
   document.querySelectorAll('[data-sk]').forEach(i=>F.stock[i.dataset.sk]=Math.max(0,parseInt(i.value)||0))}
 function renderAdmin(){const t=S.adminTab;
   const pend=S.orders.filter(o=>o.status==='new'||o.status==='awaiting_payment').length;
-  const TL={overview:'Overview',products:'Products',orders:'Orders'+(pend?' ('+pend+')':''),customers:'Customers',inventory:'Stock',reviews:'Reviews'+(S.reviews.filter(r=>!r.approved).length?' ('+S.reviews.filter(r=>!r.approved).length+')':''),delivery:'Delivery and payment',profit:'Profit',reports:'Reports'};
+  const TL={overview:'Overview',products:'Products',orders:'Orders'+((pend+unreadCount())?' ('+(pend+unreadCount())+')':''),customers:'Customers',inventory:'Stock',reviews:'Reviews'+(S.reviews.filter(r=>!r.approved).length?' ('+S.reviews.filter(r=>!r.approved).length+')':''),delivery:'Delivery and payment',profit:'Profit',reports:'Reports'};
   const tabs=Object.keys(TL).map(k=>'<button class="chip" data-act="atab" data-v="'+k+'" aria-pressed="'+(t===k)+'">'+TL[k]+'</button>').join('');
   let body='';const OL=filteredOrders();
   if(t==='products'){
@@ -752,11 +809,11 @@ function renderAdmin(){const t=S.adminTab;
       +'<div style="display:flex;gap:.6rem;flex-wrap:wrap"><button class="btn" type="submit">Save product</button><button class="btn ghost" type="button" data-act="fcancel">Cancel</button></div></form>'}
     else body=setupCard()+'<div style="display:flex;justify-content:space-between;gap:1rem;align-items:center;margin-bottom:1rem"><p style="color:var(--muted)">'+(S.products.length?S.products.length+' products':'No products yet. Samples are shown on the site until you add one.')+'</p><button class="btn sm" data-act="fnew">Add product</button></div>'
       +'<div class="scroll"><table class="tbl"><thead><tr><th>Product</th><th>Price</th><th>In stock</th><th></th></tr></thead><tbody>'+S.products.map(p=>'<tr><td><b>'+esc(p.name)+'</b><br><small>'+esc(p.category||'')+(p.active===false?' · hidden':'')+'</small></td><td>'+naira(p.price)+'</td><td>'+total(p)+'</td><td><button class="btn sm ghost" data-act="fedit" data-id="'+esc(p.id)+'">Edit</button> <button class="btn sm ghost" data-act="fdel" data-id="'+esc(p.id)+'">Delete</button></td></tr>').join('')+'</tbody></table></div>'}
-  if(t==='orders')body=ordersFilters()+(OL.length?'<div class="scroll"><table class="tbl"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody>'+[...OL].sort((a,b)=>b.createdAt-a.createdAt).map(o=>'<tr><td>'+(o.no?'<b>#'+o.no+'</b> <small>'+esc(o.method||'')+'</small><br>':'')+(o.items||[]).map(i=>esc(i.name)+' ('+esc(i.colour)+', '+esc(i.size)+') x'+i.n).join('<br>')+'<br><small>'+new Date(o.createdAt).toLocaleString('en-NG')+'</small></td><td>'+esc(o.customer?.name)+'<br><small>'+esc(o.customer?.phone)+'<br>'+esc(o.customer?.state)+(o.customer?.address?'<br>'+esc(o.customer.address):'')+(o.customer?.email?'<br>'+esc(o.customer.email):'')+'</small></td><td>'+naira(o.total)+'</td><td><span class="pill">'+esc(o.status)+'</span></td><td>'+(NEXT[o.status]?'<button class="btn sm" data-act="ostep" data-id="'+esc(o.id)+'">'+NEXT[o.status][1]+'</button> ':'')+(o.receipt?'<button class="btn sm ghost" data-act="rcpt" data-id="'+esc(o.id)+'">Receipt</button> ':'')+(BE&&['awaiting_payment','paid','packed'].includes(o.status)?'<button class="btn sm ghost" data-act="ocancel" data-id="'+esc(o.id)+'">Cancel</button> ':'')+'<a class="btn sm ghost" target="_blank" rel="noopener" href="'+esc(waTo(o.customer?.phone,'Hello '+(o.customer?.name||'')+', thank you for your order from X and O.'))+'">WhatsApp</a></td></tr>').join('')+'</tbody></table></div><p style="color:var(--muted);font-size:.85rem;margin-top:.8rem">'+(BE?'Items are held as soon as the customer orders, and go back into stock if an unpaid order expires or is cancelled.':'"Payment received" takes the items out of stock.')+'</p>':'<p style="color:var(--muted)">Orders sent from the website appear here.</p>');
+  if(t==='orders')body=ordersFilters()+(OL.length?[...OL].sort((a,b)=>b.createdAt-a.createdAt).map(orderCard).join('')+'<p style="color:var(--muted);font-size:.85rem;margin-top:.8rem">'+(BE?'An order stays open until it is cancelled, or the customer confirms they received it and leaves a review. Items are held as soon as the customer orders, and go back into stock if an unpaid order expires or is cancelled.':'"Payment received" takes the items out of stock.')+'</p>':'<p style="color:var(--muted)">Orders sent from the website appear here.</p>');
   if(t==='reviews')body=S.reviews.length?S.reviews.map(r=>'<div class="rev"><span class="stars">'+'★'.repeat(+r.stars||0)+'</span> <b style="display:inline">'+esc(r.name)+'</b> <span class="pill">'+(r.approved?'Showing':'Waiting')+'</span><p>'+esc(r.text)+'</p><small>'+esc((byId(r.productId)||{}).name||'')+'</small><div style="margin-top:.4rem;display:flex;gap:.4rem">'+(r.approved?'':'<button class="btn sm" data-act="rapp" data-id="'+esc(r.id)+'">Approve</button>')+'<button class="btn sm ghost" data-act="rdel" data-id="'+esc(r.id)+'">Delete</button></div></div>').join(''):'<p style="color:var(--muted)">New customer reviews wait here for your approval before they show on the product page.</p>';
   if(t==='overview')body=overviewTab();if(t==='customers')body=customersTab();if(t==='inventory')body=inventoryTab();
   if(t==='profit')body=profitTab();if(t==='delivery')body=deliveryTab();if(t==='reports')body=reportsTab();
-  $('#admin').innerHTML='<div class="head"><div><span class="eyebrow">Dashboard</span><h1 class="h2like">Business dashboard</h1></div><div style="display:flex;gap:.5rem;flex-wrap:wrap">'+(BE?'<button class="btn sm ghost" data-act="refresh">Refresh</button><button class="btn sm ghost" data-act="signout">Sign out</button>':'')+'</div></div><div class="tabs" style="margin-bottom:1.4rem">'+tabs+'</div>'+body}
+  $('#admin').innerHTML='<div class="head"><div><span class="eyebrow">Dashboard</span><h1 class="h2like">Business dashboard</h1></div><div style="display:flex;gap:.5rem;flex-wrap:wrap">'+(BE?'<button class="btn sm ghost" data-act="refresh">Refresh</button><button class="btn sm ghost" data-act="signout">Sign out</button>':'')+'</div></div><div class="tabs" style="margin-bottom:1.4rem">'+tabs+'</div>'+body;labelTables()}
 
 const PAIDX=['new','awaiting_payment','cancelled','expired','needs_review'];
 const isPaid=o=>!PAIDX.includes(o.status);
@@ -783,14 +840,14 @@ function overviewTab(){const paid=S.orders.filter(isPaid),now=Date.now(),D=864e5
   const recent=[...S.orders].sort((a,b)=>b.createdAt-a.createdAt).slice(0,6);
   return '<div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.2rem"><button class="btn" data-act="qadd">+ Add new product (photos and video)</button></div>'
   +setupCard()
-  +'<div class="kpis">'+k('Total sales',naira(sumT(paid)))+k('Last 30 days',naira(r30))+k('Last 7 days',naira(r7))+k('Net profit, 30 days',naira(profitCalc(now-30*D).net),'',profitCalc(now-30*D).net<0?'':'')+k('All orders',S.orders.length)+k('Awaiting payment',aw.length,aw.length)+k('To pack or ship',toShip.length,toShip.length)+k('Customers',custs.length)+k('Average order',paid.length?naira(Math.round(sumT(paid)/paid.length)):'-')+k('Products live',live)+k('Low or sold out',low.length,low.length)+k('Reviews waiting',waiting,waiting)+'</div>'
+  +'<div class="kpis">'+k('Total sales',naira(sumT(paid)))+k('Last 30 days',naira(r30))+k('Last 7 days',naira(r7))+k('Unread messages',unreadCount(),unreadCount()?'warn':'')+k('Net profit, 30 days',naira(profitCalc(now-30*D).net),'',profitCalc(now-30*D).net<0?'':'')+k('All orders',S.orders.length)+k('Awaiting payment',aw.length,aw.length)+k('To pack or ship',toShip.length,toShip.length)+k('Customers',custs.length)+k('Average order',paid.length?naira(Math.round(sumT(paid)/paid.length)):'-')+k('Products live',live)+k('Low or sold out',low.length,low.length)+k('Reviews waiting',waiting,waiting)+'</div>'
   +'<h3 style="font-size:1.4rem">Sales, last 14 days</h3><div class="bars" role="img" aria-label="Sales per day for the last 14 days">'+days.map(d=>'<i style="height:'+Math.round(d.v/mx*100)+'%" title="'+naira(d.v)+'"></i>').join('')+'</div><div class="barlab">'+days.map(d=>'<span>'+d.l+'</span>').join('')+'</div>'
   +'<div class="dash2" style="margin-top:1.6rem"><div><h3 style="font-size:1.4rem;margin-bottom:.4rem">Sales by category</h3>'+tbl(byCat)+'</div><div><h3 style="font-size:1.4rem;margin-bottom:.4rem">Sales by state</h3>'+tbl(byState)+'</div></div>'
   +'<h3 style="font-size:1.4rem;margin:1.6rem 0 .4rem">Latest orders</h3>'+(recent.length?'<div class="scroll"><table class="tbl"><tbody>'+recent.map(o=>'<tr><td><b>'+(o.no?'#'+o.no:'')+'</b><br><small>'+new Date(o.createdAt).toLocaleDateString('en-NG')+'</small></td><td>'+esc(o.customer?.name)+'<br><small>'+esc(o.customer?.state)+'</small></td><td>'+naira(o.total)+'</td><td><span class="pill">'+esc(o.status)+(o.receipt&&(o.status==='awaiting_payment')?' · receipt sent':'')+'</span></td></tr>').join('')+'</tbody></table></div>':'<p style="color:var(--muted)">No orders yet.</p>')
   +(low.length?'<h3 style="font-size:1.4rem;margin:1.6rem 0 .4rem">Running low</h3><div class="scroll"><table class="tbl"><tbody>'+low.slice(0,8).map(l=>'<tr><td>'+esc(l.p)+'</td><td>'+esc(l.c)+' · '+esc(l.s)+'</td><td><span class="pill">'+(l.n===0?'Sold out':l.n+' left')+'</span></td></tr>').join('')+'</tbody></table></div>':'')}
 function customersTab(){const c=customerList();
   return '<p style="color:var(--muted);margin-bottom:.8rem">'+c.length+' customers. Built from every order placed on the website.</p>'
-  +(c.length?'<div class="scroll"><table class="tbl"><thead><tr><th>Customer</th><th>State</th><th>Orders</th><th>Spent (paid)</th><th>Last order</th><th></th></tr></thead><tbody>'+c.map(x=>'<tr><td><b>'+esc(x.name)+'</b><br><small>'+esc(x.phone)+(x.email?'<br>'+esc(x.email):'')+'</small></td><td>'+esc(x.state)+'</td><td>'+x.orders+'</td><td>'+naira(x.spent)+'</td><td>'+new Date(x.last).toLocaleDateString('en-NG')+'</td><td><a class="btn sm ghost" target="_blank" rel="noopener" href="'+esc(waTo(x.phone,'Hello '+x.name+', this is X and O.'))+'">WhatsApp</a></td></tr>').join('')+'</tbody></table></div>':'<p style="color:var(--muted)">Customers appear here after their first order.</p>')
+  +(c.length?c.map(x=>{const key='c:'+normPhone(x.phone),arm=S.delArm===key;return '<div class="ccard"><b>'+esc(x.name)+'</b><small>'+esc(x.phone)+(x.email?' · '+esc(x.email):'')+'</small><small>'+esc(x.state)+' · '+x.orders+' order'+(x.orders===1?'':'s')+' · Spent (paid) '+naira(x.spent)+' · Last order '+new Date(x.last).toLocaleDateString('en-NG')+'</small><div class="oacts"><a class="btn sm ghost" target="_blank" rel="noopener" href="'+esc(waTo(x.phone,'Hello '+x.name+', this is X and O.'))+'">WhatsApp</a>'+(BE?(arm?'<button class="btn sm danger" data-act="cdelgo" data-ph="'+esc(x.phone)+'">Tap again to delete</button><button class="btn sm ghost" data-act="odelno">Keep</button>':'<button class="btn sm ghost" data-act="cdel" data-ph="'+esc(x.phone)+'" data-key="'+esc(key)+'">Delete customer</button>'):'')+'</div></div>'}).join(''):'<p style="color:var(--muted)">Customers appear here after their first order.</p>')
   +'<div style="margin-top:1.2rem"><button class="btn sm ghost" data-act="csvCustomers">Download customers (CSV)</button></div>'}
 function inventoryTab(){const rows=[];S.products.forEach(p=>cols(p).forEach(c=>sizes(p).forEach(s=>rows.push({p:p.name,c:c.name,s,n:qty(p,c.name,s)}))));
   const units=rows.reduce((a,r)=>a+r.n,0),value=S.products.reduce((a,p)=>a+total(p)*(p.price||0),0);
@@ -800,7 +857,7 @@ function inventoryTab(){const rows=[];S.products.forEach(p=>cols(p).forEach(c=>s
   if(BE){h+='<h3 style="font-size:1.4rem;margin:1.8rem 0 .4rem">Stock movements</h3>'+((S.slog||[]).length?'<div class="scroll"><table class="tbl"><thead><tr><th>When</th><th>Item</th><th>Change</th><th>Why</th></tr></thead><tbody>'+S.slog.map(l=>'<tr><td>'+new Date(l.at).toLocaleString('en-NG')+'</td><td>'+esc(l.item)+'</td><td>'+(l.delta>0?'+':'')+l.delta+'</td><td>'+esc(l.reason)+'</td></tr>').join('')+'</tbody></table></div>':'<p style="color:var(--muted)">Every sale, return to stock and manual change is recorded here.</p>')
     +'<h3 style="font-size:1.4rem;margin:1.8rem 0 .4rem">Customers waiting for a restock</h3>'+((S.rest||[]).length?'<div class="scroll"><table class="tbl"><tbody>'+S.rest.map(r=>'<tr><td>'+esc(r.item)+'</td><td>'+esc(r.phone)+'</td><td><a class="btn sm ghost" target="_blank" rel="noopener" href="'+esc(waTo(r.phone,'Hello! The piece you asked about at X and O is back in stock.'))+'">Tell them</a></td></tr>').join('')+'</tbody></table></div>':'<p style="color:var(--muted)">When a customer taps "tell me when it is back" on a sold-out size, they appear here.</p>')}
   return h}
-async function loadExtras(){if(!BE||!S.canEdit)return;try{S.slog=await BE.stockLog()}catch(e){S.slog=[]}try{S.rest=await BE.restocks()}catch(e){S.rest=[]}try{S.costs=await BE.costs();S.exp=await BE.expenses();S.no003=false}catch(e){S.no003=true}if(CUR==='admin'&&!S.form&&['inventory','profit','overview'].includes(S.adminTab))renderAdmin()}
+async function loadExtras(){if(!BE||!S.canEdit)return;startOrderWatch();try{S.slog=await BE.stockLog()}catch(e){S.slog=[]}try{S.rest=await BE.restocks()}catch(e){S.rest=[]}try{S.costs=await BE.costs();S.exp=await BE.expenses();S.no003=false}catch(e){S.no003=true}if(CUR==='admin'&&!S.form&&['inventory','profit','overview'].includes(S.adminTab))renderAdmin()}
 function setupCard(){const steps=[['Add your first products with photos and a short video',S.products.length>0],['Save your bank details for transfers',!!(S.pay&&S.pay.number)],['Set delivery fees for the states you ship to',Object.keys(S.dlv||{}).length>0],['Upload customer WhatsApp screenshots',S.shots.length>0]];
   const done=steps.filter(s=>s[1]).length;if(done===steps.length)return'';
   return '<div class="note"><b>Launch checklist: '+done+' of '+steps.length+' done</b><ul style="margin:.5rem 0 0;padding-left:1.2rem">'+steps.map(s=>'<li>'+(s[1]?'✓ ':'')+esc(s[0])+'</li>').join('')+'</ul><details style="border:0;padding:.6rem 0 0"><summary>Photo and video guide</summary><p>For each colour take a full-length front photo, a back photo, a close-up of the fabric and one 10 to 15 second video of the piece moving. Shoot in daylight against a plain wall with the phone held upright, and use the same light for every colour so customers see the true shade.</p></details></div>'}
@@ -816,7 +873,7 @@ function reportsTab(){const paid=S.orders.filter(o=>!['new','awaiting_payment','
   return '<div class="two" style="margin-bottom:1.2rem"><div class="note"><span class="eyebrow">Paid orders</span><div style="font-size:1.8rem;font-weight:700">'+paid.length+'</div></div><div class="note"><span class="eyebrow">Sales from paid orders</span><div style="font-size:1.8rem;font-weight:700">'+naira(rev)+'</div></div></div>'
   +'<h3 style="font-size:1.5rem;margin:1rem 0 .4rem">Best sellers</h3>'+(top.length?'<table class="tbl"><tbody>'+top.map(t=>'<tr><td>'+esc(t[0])+'</td><td>'+t[1]+' sold</td></tr>').join('')+'</tbody></table>':'<p style="color:var(--muted)">Best sellers appear after the first paid order.</p>')
   +'<h3 style="font-size:1.5rem;margin:1.6rem 0 .4rem">Low or sold-out stock</h3>'+(low.length?'<div class="scroll"><table class="tbl"><tbody>'+low.map(l=>'<tr><td>'+esc(l.p)+'</td><td>'+esc(l.c)+' · '+esc(l.s)+'</td><td><span class="pill">'+(l.n===0?'Sold out':l.n+' left')+'</span></td></tr>').join('')+'</tbody></table></div>':'<p style="color:var(--muted)">Nothing is running low.</p>')
-  +'<div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.6rem"><button class="btn sm ghost" data-act="csvOrders">Download orders (CSV)</button><button class="btn sm ghost" data-act="csvStock">Download stock (CSV)</button></div>'}
+  +'<div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.6rem"><button class="btn sm ghost" data-act="csvOrders">Download orders (CSV)</button><button class="btn sm ghost" data-act="csvStock">Download stock (CSV)</button></div>'+dataZone()}
 async function stepOrder(id){const o=S.orders.find(x=>x.id===id);if(!o||!NEXT[o.status])return;
   if(BE){try{await BE.setStatus(id,NEXT[o.status][0]);await refreshAll();toast('Order updated')}catch(e){toast('Could not update the order')}return}
   if(o.status==='new')return confirmOrder(id);
@@ -833,6 +890,37 @@ async function confirmOrder(id){const o=S.orders.find(x=>x.id===id);if(!o)return
   try{for(const it of o.items||[]){const p=S.products.find(x=>x.id===it.pid);if(!p)continue;const k=it.colour+'|'+it.size;const n=Math.max(0,(Number((p.stock||{})[k])||0)-it.n);await S.db.doc('products/'+p.id).update({stock:{[k]:n}})}
     await S.db.doc('orders/'+o.uid).update({[id]:{status:'paid'}});toast('Order confirmed and stock updated')}catch(e){toast('Could not update the order')}}
 
+
+
+/* ---------- conversation, order cards, deleting ---------- */
+const MSGTIME=d=>new Date(d).toLocaleString('en-NG',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'});
+function threadHtml(ms,me){return (ms||[]).map(m=>'<div class="msg '+(m.from==='system'?'sys':m.from===me?'me':'them')+'">'+esc(m.text)+(m.from==='system'?'':'<small>'+esc(m.from==='owner'?'X and O':'Customer')+' · '+esc(MSGTIME(m.at))+'</small>')+'</div>').join('')}
+function orderOpen(o){return o.open!==undefined?o.open:!['cancelled','expired','delivered'].includes(o.status)}
+function orderCard(o){const c=o.customer||{},open=orderOpen(o),ms=o.msgs||[],un=!!o.unread,id=esc(o.id);
+  const arm=S.delArm===o.id;
+  return '<article class="ocard'+(un?' unread':'')+'" id="o-'+id+'"><header class="oh"><div><b>'+(o.no?'#'+esc(o.no):'Order')+'</b> <span class="pill">'+esc(ST_LABEL[o.status]||o.status)+'</span> <span class="pill '+(open?'on':'off')+'">'+(open?'Open':'Closed')+'</span>'+(un?' <span class="pill new">New message</span>':'')+'</div><small>'+esc(new Date(o.createdAt).toLocaleString('en-NG'))+'</small></header>'
+  +'<div class="ob"><div><span class="lbl2">Customer</span><b>'+esc(c.name)+'</b><br><small>'+esc(c.phone)+'<br>'+esc(c.state)+(c.address?'<br>'+esc(c.address):'')+(c.email?'<br>'+esc(c.email):'')+'</small></div>'
+  +'<div><span class="lbl2">Items</span>'+(o.items||[]).map(i=>esc(i.name)+' ('+esc(i.colour)+', '+esc(i.size)+') × '+i.n).join('<br>')+(o.courier||o.tracking?'<br><small>Courier: '+esc(o.courier||'')+' '+esc(o.tracking||'')+'</small>':'')+'</div></div>'
+  +'<div class="otot"><span>'+esc(o.method||'')+'</span><b>'+naira(o.total)+'</b></div>'
+  +'<div class="oacts">'+(NEXT[o.status]?'<button class="btn sm" data-act="ostep" data-id="'+id+'">'+NEXT[o.status][1]+'</button>':'')+(o.receipt?'<button class="btn sm ghost" data-act="rcpt" data-id="'+id+'">Receipt</button>':'')
+  +(BE&&['awaiting_payment','paid','packed'].includes(o.status)?'<button class="btn sm ghost" data-act="ocancel" data-id="'+id+'">Cancel</button>':'')
+  +'<a class="btn sm ghost" target="_blank" rel="noopener" href="'+esc(waTo(c.phone,'Hello '+(c.name||'')+', thank you for your order from X and O.'))+'">WhatsApp</a>'
+  +(BE?(arm?'<button class="btn sm danger" data-act="odelgo" data-id="'+id+'">Tap again to delete</button><button class="btn sm ghost" data-act="odelno">Keep</button>':'<button class="btn sm ghost" data-act="odel" data-id="'+id+'">Delete</button>'):'')+'</div>'
+  +(BE?'<details class="chat" data-oid="'+id+'"'+(S.chatOpen===o.id?' open':'')+'><summary>Messages with customer ('+ms.length+')'+(un?' · new':'')+'</summary><div class="thread" id="t-'+id+'">'+threadHtml(ms,'owner')+'</div>'
+    +(open?'<form class="ochat" data-oid="'+id+'"><textarea name="m" maxlength="1000" placeholder="Write to the customer…" required></textarea><button class="btn sm" type="submit">Send</button></form>':'<p class="fine">This order is closed.</p>')+'</details>':'')
+  +'</article>'}
+function unreadCount(){return S.orders.filter(o=>o.unread).length}
+function paintThreads(){document.querySelectorAll('details.chat').forEach(d=>{const o=S.orders.find(x=>x.id===d.dataset.oid),t=document.getElementById('t-'+d.dataset.oid);if(o&&t){const near=t.scrollHeight-t.scrollTop-t.clientHeight<60;t.innerHTML=threadHtml(o.msgs,'owner');if(near)t.scrollTop=t.scrollHeight;d.querySelector('summary').textContent='Messages with customer ('+(o.msgs||[]).length+')'}})}
+async function refreshOrders(){if(!BE||!S.canEdit)return;const before=new Set(S.orders.filter(o=>o.unread).map(o=>o.id));
+  try{S.orders=await BE.orders()}catch(e){return}
+  if(S.chatOpen){const o=S.orders.find(x=>x.id===S.chatOpen);if(o&&o.unread&&document.querySelector('details.chat[open]')){o.unread=false;BE.markRead(o.id).catch(()=>{})}}
+  const fresh=S.orders.filter(o=>o.unread&&!before.has(o.id));if(fresh.length)toast('New message from '+(fresh[0].customer?.name||'a customer'));
+  paint();const typing=document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+  if(CUR==='admin'&&!S.form&&!typing)renderAdmin();else paintThreads()}
+function startOrderWatch(){if(startOrderWatch.on||!BE||!S.canEdit)return;startOrderWatch.on=true;try{BE.watchOrders(()=>refreshOrders())}catch(e){}
+  setInterval(()=>{if(!document.hidden&&S.canEdit&&CUR==='admin')refreshOrders()},20000)}
+function labelTables(){document.querySelectorAll('#admin .tbl').forEach(t=>{if(t.closest('#dlvForm'))return;t.classList.add('stack');const hs=[...t.querySelectorAll('thead th')].map(x=>x.textContent);t.querySelectorAll('tbody tr').forEach(r=>[...r.children].forEach((td,i)=>{if(hs[i]!==undefined)td.setAttribute('data-label',hs[i])}))})}
+function dataZone(){if(!BE)return'';return '<div class="dz"><h3 style="font-size:1.4rem;margin-bottom:.3rem">Delete data (owner only)</h3><p style="color:var(--muted);font-size:.9rem;margin-bottom:.8rem">This cannot be undone. Your login, bank details and delivery fees are always kept.</p><form id="clrForm"><div class="field"><label for="clrScope">What to delete</label><select id="clrScope"><option value="orders">All orders, customers and messages</option><option value="reviews">All reviews</option><option value="expenses">All expenses</option><option value="products">All products (delete orders first)</option><option value="all">Everything above</option></select></div><div class="field"><label for="clrTxt">Type DELETE to confirm</label><input id="clrTxt" autocomplete="off" autocapitalize="characters"></div><div class="err" id="clrErr" role="alert"></div><button class="btn danger" type="submit">Delete permanently</button></form></div>'}
 
 /* ---------- profit and records ---------- */
 const EXPCATS=['Fabric and stock','Packaging','Delivery','Marketing','Rent and utilities','Salaries','Other'];
@@ -893,6 +981,11 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]
   else if(a==='mrm'){readForm();S.form.media.splice(i,1);renderAdmin()}
   else if(a==='fdel'){if(b.dataset.arm){try{if(BE){const r=await BE.deleteProduct(id);await refreshAll();toast(r==='hidden'?'This product has past orders, so it was hidden instead':'Product deleted');renderAdmin()}else{await S.db.doc('products/'+id).delete();toast('Product deleted')}}catch(x){toast('Could not delete')}}else{b.dataset.arm=1;b.textContent='Tap again to delete'}}
   else if(a==='ostep')stepOrder(id);
+  else if(a==='odel'){S.delArm=id;renderAdmin()}
+  else if(a==='cdel'){S.delArm=b.dataset.key;renderAdmin()}
+  else if(a==='odelno'){S.delArm=null;renderAdmin()}
+  else if(a==='odelgo'){try{await BE.deleteOrder(id);S.delArm=null;await refreshAll();toast('Order deleted')}catch(x){S.delArm=null;toast(/forbidden/.test(x.message||'')?'Only the owner can delete':'Could not delete');renderAdmin()}}
+  else if(a==='cdelgo'){try{const n=await BE.deleteCustomer(b.dataset.ph);S.delArm=null;await refreshAll();toast(n+' order'+(n===1?'':'s')+' deleted')}catch(x){S.delArm=null;toast(/forbidden/.test(x.message||'')?'Only the owner can delete':'Could not delete');renderAdmin()}}
   else if(a==='place')placeLive();
   else if(a==='showpw'){const i=$('#lgP');i.type=i.type==='password'?'text':'password';b.textContent=i.type==='password'?'Show':'Hide'}
   else if(a==='qadd'){S.adminTab='products';S.form=newForm();renderAdmin();scrollTo(0,0)}
@@ -900,6 +993,9 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]
   else if(a==='ofilt'){S.of.st=v;renderAdmin()}
   else if(a==='csvCustomers')saveCsv('xo-customers.csv',[['Name','Phone','Email','State','Orders','Spent (NGN)','Last order'],...customerList().map(c=>[c.name,c.phone,c.email,c.state,c.orders,c.spent,new Date(c.last).toISOString().slice(0,10)])]);
   else if(a==='paycard'){b.disabled=true;try{location.href=await BE.payByCard(S.track.token)}catch(x){b.disabled=false;toast(/delivery_fee/.test(x.message)?'Card payment opens once we confirm the delivery fee.':'Card payment is not available right now. Please pay by transfer.')}}
+  else if(a==='cancelask'){S.cancelArm=true;renderTrack()}
+  else if(a==='cancelno'){S.cancelArm=false;renderTrack()}
+  else if(a==='cancelgo'){b.disabled=true;try{await BE.cancelMine(S.track.token);S.cancelArm=false;toast('Your order has been cancelled');await showTrack(S.track.token)}catch(x){b.disabled=false;toast('This order can no longer be cancelled. Please message us.');showTrack(S.track.token)}}
   else if(a==='received'){b.disabled=true;try{await BE.confirmReceived(S.track.token);toast('Thank you. Please leave a review below.');await showTrack(S.track.token);scrollTo({top:0,behavior:'smooth'})}catch(x){b.disabled=false;toast('Could not update. Please try again.')}}
   else if(a==='lastorder'){e.preventDefault();let t=null;try{t=localStorage.getItem('xo-last')}catch(x){}if(t)location.hash='#/order/'+t}
   else if(a==='login'){e.preventDefault();location.hash='#/admin'}
@@ -927,12 +1023,22 @@ document.addEventListener('change',async e=>{const t=e.target;
 });
 document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest('[data-cat]');if(c){S.cat=c.dataset.cat;S.origin='All';renderFilters();renderGrid()}});
 document.addEventListener('input',e=>{if(e.target.id==='oq'){const val=e.target.value;S.of.q=val;renderAdmin();const i=$('#oq');if(i){i.focus();i.setSelectionRange(val.length,val.length)}}});
+document.addEventListener('toggle',e=>{const d=e.target;if(!d.matches||!d.matches('details.chat'))return;const id=d.dataset.oid;
+  if(d.open){S.chatOpen=id;const o=S.orders.find(x=>x.id===id);if(o&&o.unread){o.unread=false;BE.markRead(id).catch(()=>{});const a=document.getElementById('o-'+id);if(a){a.classList.remove('unread');a.querySelectorAll('.pill.new').forEach(x=>x.remove())}}const t=document.getElementById('t-'+id);if(t)t.scrollTop=t.scrollHeight}
+  else if(S.chatOpen===id)S.chatOpen=null},true);
 document.addEventListener('submit',async e=>{e.preventDefault();
+  if(e.target.classList&&e.target.classList.contains('ochat')){const f=e.target,id=f.dataset.oid,ta=f.querySelector('textarea'),txt=ta.value.trim();if(!txt)return;f.querySelector('button').disabled=true;
+    try{await BE.adminMessage(id,txt);ta.value='';S.orders=await BE.orders();const o=S.orders.find(x=>x.id===id);if(o)o.unread=false;paintThreads()}catch(x){toast('Message not sent. Please try again.')}f.querySelector('button').disabled=false;return}
+  if(e.target.id==='clrForm'){const er=$('#clrErr');er.textContent='';if($('#clrTxt').value.trim()!=='DELETE'){er.textContent='Type DELETE in capital letters to confirm.';return}
+    try{await BE.clearData($('#clrScope').value);await refreshAll();await loadExtras();toast('Deleted');renderAdmin()}catch(x){er.textContent=/delete_orders_first/.test(x.message||'')?'Delete the orders first, then the products.':/forbidden/.test(x.message||'')?'Only the owner can delete data.':'Could not delete. Has database step 005 been run?'}return}
+  if(e.target.id==='msgForm'){const ta=$('#msgIn'),txt=ta.value.trim();if(!txt)return;const bt=e.target.querySelector('button');bt.disabled=true;
+    try{await BE.postMessage(S.track.token,txt);ta.value='';S.track.o=await BE.getOrder(S.track.token);const t=$('#cthread');if(t){t.innerHTML=threadHtml(S.track.o.messages,'customer');t.scrollTop=t.scrollHeight}}
+    catch(x){const m=x.message||'';toast(/closed/.test(m)?'This order is closed.':/too_many/.test(m)?'Please wait a little before sending more.':'Message not sent. Please try again.');if(/closed/.test(m))showTrack(S.track.token)}bt.disabled=false;return}
   if(e.target.id==='pForm')saveProduct();
   if(e.target.id==='loginForm'){const err=$('#lgErr');err.textContent='';try{const adm=await BE.signIn($('#lgE').value.trim(),$('#lgP').value);if(!adm){await BE.signOut();err.textContent='This account is not an owner account.';return}
       S.canEdit=true;authUI();await refreshAll();await loadExtras();renderAdmin()}catch(x){err.textContent='Could not sign in. Check your email and password.'}}
   if(e.target.classList&&e.target.classList.contains('trev')){const f=e.target,m=f.querySelector('.rvm');
-    try{await BE.review(S.track.token,f.dataset.item,+f.st.value,f.nm.value.trim(),f.tx.value.trim(),f.sz.value);f.innerHTML='<p class="stock ok">Thank you. Your review will show after we approve it.</p>'}
+    try{await BE.review(S.track.token,f.dataset.item,+f.st.value,f.nm.value.trim(),f.tx.value.trim(),f.sz.value);f.innerHTML='<p class="stock ok">Thank you. Your review will show after we approve it.</p>';try{S.track.o=await BE.getOrder(S.track.token)}catch(z){}setTimeout(()=>{if(CUR==='cart'&&S.track)renderTrack()},1200);trackPoll(S.track.token)}
     catch(x){m.textContent=/duplicate|unique|23505/.test(String(x.message||x.code))?' You already reviewed this item.':' Could not post. Please try again.'}}
   if(e.target.id==='expForm'){const er=$('#xErr');er.textContent='';const x={date:$('#xDate').value,cat:$('#xCat').value,note:$('#xNote').value.trim(),amt:Math.round(+$('#xAmt').value)};
     if(!(x.amt>0)||!x.date){er.textContent='Enter a date and an amount.';return}
@@ -956,14 +1062,14 @@ function parseRoute(){const h=location.hash||'';
   m=h.match(/^#\/([a-z]+)$/);if(m&&PAGES[m[1]]&&m[1]!=='home')return{page:m[1]};
   const old={'#shop':'shop','#about':'about','#love':'love','#help':'help','#contact':'contact','#legal':'privacy','#cart':'cart'};
   return{page:old[h]||'home'}}
-function route(){const r=parseRoute();hideAll();CUR=r.page;
+function route(){const r=parseRoute();hideAll();CUR=r.page;document.body.dataset.page=CUR;
   document.querySelectorAll('[data-view]').forEach(v=>{v.hidden=v.dataset.view!==CUR});
   const cur='#/'+CUR;document.querySelectorAll('nav.main a,#mobnav a,.tabbar a').forEach(a=>{const h=a.getAttribute('href');if(h===cur||(CUR==='home'&&h==='#/'))a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
   setMenu(false);
   document.title=CUR==='home'?PAGES.home:PAGES[CUR]+' | X and O';
   scrollTo(0,0);
   if(CUR==='cart'){if(r.token&&BE)showTrack(r.token);else renderCart()}
-  if(CUR==='admin'){if(S.canEdit){renderAdmin();loadExtras()}else if(BE)renderLogin();else $('#admin').innerHTML=loginCard(true)}
+  if(CUR==='admin'){if(S.canEdit){renderAdmin();loadExtras();if(BE)refreshOrders()}else if(BE)renderLogin();else $('#admin').innerHTML=loginCard(true)}
   const h=document.querySelector('[data-view="'+CUR+'"] h1');if(h){h.tabIndex=-1;h.focus({preventScroll:true})}}
 addEventListener('hashchange',route);
 

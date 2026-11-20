@@ -31,6 +31,6 @@ const srv=http.createServer((q,r)=>{let f=q.url.split('?')[0].replace(/^\//,'')|
  ok('after confirming receipt the review form appears',await pg.locator('.trev').count()===1&&(await pg.textContent('#cart')).includes('Thank you for shopping'));
  ok('all 5 steps done',await pg.locator('.steps li.done').count()===5);
  await pg.fill('.trev textarea','Beautiful fabric and a perfect fit.');await pg.click('.trev button[type=submit]');await pg.waitForTimeout(200);
- ok('review submitted',(await pg.textContent('#cart')).includes('Thank you. Your review will show after we approve it.')&&await pg.evaluate(()=>window.__DB.calls.some(c=>c[0]==='review')));
+ ok('review submitted',(await pg.textContent('#cart')).includes('Your review will show after we approve it')&&await pg.evaluate(()=>window.__DB.calls.some(c=>c[0]==='review')));
  ok('no page errors',errs.length===0,errs.join('|'));
  await b.close();srv.close();console.log('PASS='+pass+' FAIL='+fail)})();
