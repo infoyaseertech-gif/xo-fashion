@@ -2,12 +2,12 @@
 (function(){
   const mk=(id,name,cat,origin,price,cols,sizes,stock)=>{const colours=cols.map(([n,h])=>({name:n,hex:h}));const st={},vid={};colours.forEach(c=>sizes.forEach(s=>{st[c.name+'|'+s]=stock[c.name+'|'+s]??0;vid[c.name+'|'+s]='v-'+id+'-'+c.name+'-'+s}));
     return{id,name,category:cat,origin,price,fabric:'Soft',desc:'Nice',colours,sizes,stock:st,vid,media:id==='p1'?[1,2,3].map(n=>({type:'image',url:'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="40" height="50"><rect width="40" height="50" fill="hsl('+n*90+',50%,70%)"/></svg>'),colour:''})):[],active:true,createdAt:Date.now()}};
-  const DB={products:[mk('p1','Classic Jilbab','Jilbab','Egypt',34000,[['Black','#231c1c'],['Pink','#e8a1b5']],['54','56'],{'Black|54':3,'Black|56':0,'Pink|54':1,'Pink|56':5})],orders:[],reviews:[],zones:{Kaduna:{fee:3000,days:3}},admin:false,calls:[]};
+  const DB={products:[mk('p1','Classic Jilbab','Jilbab','Egypt',34000,[['Black','#231c1c'],['Pink','#e8a1b5']],['54','56'],{'Black|54':3,'Black|56':0,'Pink|54':1,'Pink|56':5})],orders:[],reviews:[{id:'r1',productId:'p1',name:'Aisha',stars:5,text:'Perfect fit and lovely fabric.',approved:true,size:'true_to_size'},{id:'r2',productId:'p1',name:'Maryam',stars:4,text:'Very soft, colour is true to the photos.',approved:true},{id:'r3',productId:'p1',name:'Hidden',stars:1,text:'Not approved yet.',approved:false},...Array.from({length:10},(_,i)=>({id:'x'+i,productId:'p1',name:'Buyer '+i,stars:5,text:'Great piece number '+i,approved:true}))],zones:{Kaduna:{fee:3000,days:3}},admin:false,calls:[]};
   window.__DB=DB;
   const find=v=>{for(const p of DB.products)for(const k in p.vid)if(p.vid[k]===v)return[p,k]};
   window.XO_BE={cardEnabled:true,
     async products(){return JSON.parse(JSON.stringify(DB.products))},async reviews(){return DB.reviews.filter(r=>r.approved||DB.admin)},async shots(){return[]},async zones(){return DB.zones},
-    async orders(){return DB.orders.map(o=>({id:o.id,no:o.no,status:o.status,method:o.method,createdAt:o.createdAt,total:o.total,receipt:o.receipt,msgs:(o.msgs||[]).map(m=>({...m})),unread:(o.msgs||[]).some(m=>m.from==='customer'&&m.at>(o.ownerRead||0)),open:!['cancelled','expired'].includes(o.status)&&!(o.status==='delivered'&&o.items.every(i=>i.reviewed)),customer:{name:o.cust.name,phone:o.cust.phone,state:o.cust.state},items:o.items.map(i=>({name:i.name,colour:i.colour,size:i.size,n:i.qty}))}))},
+    async orders(){return DB.orders.map(o=>({id:o.id,no:o.no,status:o.status,method:o.method,createdAt:o.createdAt,total:o.total,receipt:o.receipt,courier:o.courier,tracking:o.tracking,msgs:(o.msgs||[]).map(m=>({...m})),unread:(o.msgs||[]).some(m=>m.from==='customer'&&m.at>(o.ownerRead||0)),open:!['cancelled','expired'].includes(o.status)&&!(o.status==='delivered'&&o.items.every(i=>i.reviewed)),customer:{name:o.cust.name,phone:o.cust.phone,state:o.cust.state},items:o.items.map(i=>({name:i.name,colour:i.colour,size:i.size,n:i.qty}))}))},
     _exp:[],async costs(){return{}},async expenses(){return this._exp},async addExpense(x){const r={...x,id:'e'+(this._exp.length+1)};this._exp.push(r);return r},async deleteExpense(id){this._exp=this._exp.filter(e=>e.id!==id)},async stockLog(){return[{at:Date.now(),delta:-2,reason:'order',item:'Classic Jilbab · Black 54'}]},async restocks(){return[{phone:'08031112222',item:'Classic Jilbab · Black 56'}]},async bank(){return{bank:'Test Bank',name:'X and O',number:'0123456789'}},watchStock(){},
     async placeOrder(items,cust,method){DB.calls.push(['place',method]);
       for(const it of items){const[p,k]=find(it.variant_id)||[];if(!p)throw new Error('unavailable');if(p.stock[k]<it.qty)throw new Error('out_of_stock:'+it.variant_id)}
@@ -27,7 +27,7 @@
     async clearData(sc){DB.calls.push(['clear',sc]);if(sc==='orders'||sc==='all')DB.orders=[];if(sc==='all'||sc==='products')DB.products=[]},
     watchOrders(){},
     async signIn(e,p){if(p==='ok'){DB.admin=true;return true}throw new Error('bad')},async signOut(){DB.admin=false},async isAdmin(){return DB.admin},
-    async setStatus(id,st){const o=DB.orders.find(x=>x.id===id);o.status=st;DB.calls.push(['status',id,st])},async receiptUrl(){return'about:blank'},
+    async setStatus(id,st,c,tr){const o=DB.orders.find(x=>x.id===id);o.status=st;if(c)o.courier=c;if(tr)o.tracking=tr;DB.calls.push(['status',id,st,c,tr])},async receiptUrl(){return'about:blank'},
     async upload(){return{url:'https://x.test/a.jpg',type:'image'}},async saveProduct(d,id){DB.calls.push(['save',d.name,Object.keys(d.stock).length])},async deleteProduct(){return'deleted'},
     async approveReview(){},async deleteReview(){},async addShot(){},async deleteShot(){},async saveBank(){},async saveZones(){}};
 })();

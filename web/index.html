@@ -356,6 +356,13 @@ nav.mob a{padding:1rem 0}
 .recvbox{border:1.5px solid var(--pink);background:var(--surface);border-radius:18px;padding:1.1rem;margin:1rem 0}
 .recvbox h3{margin:0 0 .3rem!important}
 
+/* --- v6: customer love with reviews --- */
+.lsum{display:flex;align-items:center;gap:1rem;margin:0 0 1.2rem}.lsum .big{font:600 3.2rem/1 var(--serif)}
+.revgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.rcard{border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:1.1rem;display:flex;flex-direction:column;gap:.5rem}
+.rcard p{margin:0;line-height:1.55;overflow-wrap:anywhere}
+.rmeta{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;font-size:.9rem}
+.rprod{align-self:flex-start;background:none;border:0;padding:0;min-height:36px;color:var(--brown);font-weight:600;cursor:pointer;text-decoration:underline}
 /* --- v5: conversation, order cards, mobile --- */
 .thread{display:flex;flex-direction:column;gap:.45rem;max-height:340px;overflow-y:auto;padding:.7rem;border:1px solid var(--line);border-radius:16px;background:var(--surface);margin:.5rem 0 .7rem}
 .thread:empty::before{content:"No messages yet. Say hello.";color:var(--muted);font-size:.9rem}
@@ -459,7 +466,11 @@ body[data-page=admin] .fab,body[data-page=cart] .fab{display:none}
 
 <section class="block" data-view="love" hidden id="love"><div class="wrap">
   <div class="head"><div><span class="eyebrow">Customer love</span><h1 class="h2like">What our customers say</h1></div><div id="loveTools"></div></div>
-  <div class="love-grid" id="loveGrid"></div>
+  <div id="loveSum"></div>
+  <div class="tabs" id="loveFilt" style="margin:0 0 1rem"></div>
+  <div class="revgrid" id="loveRev"></div>
+  <div id="loveMore"></div>
+  <div id="loveShots"><h2 class="h2like" style="font-size:1.7rem;margin:2.2rem 0 .8rem">Messages from our customers</h2><div class="love-grid" id="loveGrid"></div></div>
 </div></section>
 
 <section class="block" data-view="help" hidden id="help" style="background:var(--surface);border-block:1px solid var(--line)"><div class="wrap">
@@ -761,11 +772,22 @@ async function logOrder(f){if(!S.db||!S.uid)return;try{const oid='o'+Date.now().
   await ref.set({...base,[oid]:{status:'new',createdAt:Date.now(),customer:f,total:sub(),items:S.cart.map(l=>({pid:l.pid,name:l.name,colour:l.colour,size:l.size,n:l.n,price:l.price}))}})}catch(e){}}
 
 /* ---------- testimonials ---------- */
+const FIT={ran_small:'Ran small',true_to_size:'True to size',ran_large:'Ran large'};
 function renderLove(){
-  const sh=S.shots.filter(x=>safe(x.url));
+  const sh=S.shots.filter(x=>safe(x.url)),all=S.reviews.filter(r=>r.approved);
+  const ids=[...new Set(all.map(r=>r.productId))].filter(id=>S.products.some(p=>p.id===id));
+  if(S.loveF!=='all'&&!ids.includes(S.loveF))S.loveF='all';
+  const list=S.loveF==='all'?all:all.filter(r=>r.productId===S.loveF),shown=list.slice(0,S.loveN||9);
   $('#loveTools').innerHTML=S.canEdit?'<label class="btn sm ghost" for="shotUp">Add screenshots</label><input id="shotUp" type="file" accept="image/*" multiple hidden>':'';
+  const n=all.length,a=n?all.reduce((t,r)=>t+(+r.stars||0),0)/n:0;
+  $('#loveSum').innerHTML=n?'<div class="lsum"><div class="big">'+a.toFixed(1)+'</div><div><span class="stars" aria-hidden="true">'+'★'.repeat(Math.round(a))+'☆'.repeat(5-Math.round(a))+'</span><div>'+n+' customer review'+(n===1?'':'s')+(BE?' from verified buyers':'')+'</div></div></div>':'';
+  $('#loveFilt').innerHTML=ids.length>1?['all',...ids].map(id=>'<button class="chip" data-act="lovef" data-v="'+esc(id)+'" aria-pressed="'+(S.loveF===id)+'">'+(id==='all'?'All reviews':esc((S.products.find(p=>p.id===id)||{}).name))+'</button>').join(''):'';
+  $('#loveRev').innerHTML=shown.length?shown.map(r=>{const p=S.products.find(x=>x.id===r.productId);return '<article class="rcard"><span class="stars" aria-label="'+(+r.stars||0)+' out of 5">'+'★'.repeat(+r.stars||0)+'</span><p>'+esc(r.text)+'</p><div class="rmeta"><b>'+esc(r.name||'Customer')+'</b>'+(BE?' <span class="pill on">Verified purchase</span>':'')+(r.size&&FIT[r.size]?' <span class="pill">'+FIT[r.size]+'</span>':'')+'</div>'+(p?'<button class="rprod" data-act="open" data-id="'+esc(p.id)+'">'+esc(p.name)+' →</button>':'')+'</article>'}).join('')
+    :'<div class="empty-frame"><p>'+(BE?'Reviews from verified buyers appear here. After your order is delivered, open your order link and tell us what you think.':'Customer reviews appear here.')+'</p></div>';
+  $('#loveMore').innerHTML=list.length>shown.length?'<p style="text-align:center;margin-top:1rem"><button class="btn ghost" data-act="lovemore">Show more reviews</button></p>':'';
+  $('#loveShots').hidden=!sh.length&&!S.canEdit&&n>0;
   $('#loveGrid').innerHTML=sh.length?sh.map(x=>'<figure><img loading="lazy" src="'+esc(safe(x.url))+'" alt="Customer message about X and O">'+(S.canEdit?'<button class="btn sm" style="position:absolute;right:8px;top:8px" data-act="delshot" data-id="'+esc(x.id)+'">Remove</button>':'')+'</figure>').join('')
-   :['Real WhatsApp messages from our customers appear here.','Thank-you notes after delivery, in the customer’s own words.','Fit, colour and fabric feedback.'].map(t=>'<div class="empty-frame"><p>'+t+'</p></div>').join('')}
+   :['Real WhatsApp messages from our customers appear here.','Thank-you notes after delivery, in the customer’s own words.'].map(t=>'<div class="empty-frame"><p>'+t+'</p></div>').join('')}
 
 /* ---------- sheets ---------- */
 function show(id){if(!document.body.classList.contains('lock'))S.opener=document.activeElement;$('#scrim').classList.add('on');$('#'+id).classList.add('on');document.body.classList.add('lock');const c=$('#'+id+' .x');if(c)c.focus()}
@@ -818,7 +840,7 @@ function renderAdmin(){const t=S.adminTab;
 const PAIDX=['new','awaiting_payment','cancelled','expired','needs_review'];
 const isPaid=o=>!PAIDX.includes(o.status);
 const sumT=a=>a.reduce((x,o)=>x+(o.total||0),0);
-S.of={st:'all',q:''};S.pf='30';S.exp=[];S.costs={};
+S.of={st:'all',q:''};S.loveF='all';S.loveN=9;S.pf='30';S.exp=[];S.costs={};
 const ST_LABEL={all:'All',awaiting_payment:'Awaiting payment',new:'New',paid:'Paid',packed:'Packed',shipped:'Shipped',delivered:'Delivered',cancelled:'Cancelled',expired:'Expired'};
 function filteredOrders(){const q=(S.of.q||'').trim().toLowerCase();return S.orders.filter(o=>(S.of.st==='all'||o.status===S.of.st)&&(!q||[o.no,o.customer?.name,o.customer?.phone,o.customer?.state].join(' ').toLowerCase().includes(q)))}
 function ordersFilters(){const have=new Set(S.orders.map(o=>o.status));
@@ -875,6 +897,7 @@ function reportsTab(){const paid=S.orders.filter(o=>!['new','awaiting_payment','
   +'<h3 style="font-size:1.5rem;margin:1.6rem 0 .4rem">Low or sold-out stock</h3>'+(low.length?'<div class="scroll"><table class="tbl"><tbody>'+low.map(l=>'<tr><td>'+esc(l.p)+'</td><td>'+esc(l.c)+' · '+esc(l.s)+'</td><td><span class="pill">'+(l.n===0?'Sold out':l.n+' left')+'</span></td></tr>').join('')+'</tbody></table></div>':'<p style="color:var(--muted)">Nothing is running low.</p>')
   +'<div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.6rem"><button class="btn sm ghost" data-act="csvOrders">Download orders (CSV)</button><button class="btn sm ghost" data-act="csvStock">Download stock (CSV)</button></div>'+dataZone()}
 async function stepOrder(id){const o=S.orders.find(x=>x.id===id);if(!o||!NEXT[o.status])return;
+  if(BE&&o.status==='paid'){S.shipFor=id;renderAdmin();return}
   if(BE){try{await BE.setStatus(id,NEXT[o.status][0]);await refreshAll();toast('Order updated')}catch(e){toast('Could not update the order')}return}
   if(o.status==='new')return confirmOrder(id);
   try{await S.db.doc('orders/'+o.uid).update({[id]:{status:NEXT[o.status][0]}});toast('Order updated')}catch(e){toast('Could not update the order')}}
@@ -902,7 +925,8 @@ function orderCard(o){const c=o.customer||{},open=orderOpen(o),ms=o.msgs||[],un=
   +'<div class="ob"><div><span class="lbl2">Customer</span><b>'+esc(c.name)+'</b><br><small>'+esc(c.phone)+'<br>'+esc(c.state)+(c.address?'<br>'+esc(c.address):'')+(c.email?'<br>'+esc(c.email):'')+'</small></div>'
   +'<div><span class="lbl2">Items</span>'+(o.items||[]).map(i=>esc(i.name)+' ('+esc(i.colour)+', '+esc(i.size)+') × '+i.n).join('<br>')+(o.courier||o.tracking?'<br><small>Courier: '+esc(o.courier||'')+' '+esc(o.tracking||'')+'</small>':'')+'</div></div>'
   +'<div class="otot"><span>'+esc(o.method||'')+'</span><b>'+naira(o.total)+'</b></div>'
-  +'<div class="oacts">'+(NEXT[o.status]?'<button class="btn sm" data-act="ostep" data-id="'+id+'">'+NEXT[o.status][1]+'</button>':'')+(o.receipt?'<button class="btn sm ghost" data-act="rcpt" data-id="'+id+'">Receipt</button>':'')
+  +(S.shipFor===o.id?'<form class="shipform" data-id="'+id+'"><b>Handing this order to delivery</b><div class="two"><div class="field"><label>Courier or rider</label><input name="c" placeholder="e.g. GIG Logistics" maxlength="60"></div><div class="field"><label>Tracking number (optional)</label><input name="t" maxlength="60"></div></div><button class="btn sm" type="submit">Confirm: handed to delivery</button> <button class="btn sm ghost" type="button" data-act="shipno">Back</button></form>':'')
+  +'<div class="oacts">'+(NEXT[o.status]&&S.shipFor!==o.id?'<button class="btn sm" data-act="ostep" data-id="'+id+'">'+NEXT[o.status][1]+'</button>':'')+(o.receipt?'<button class="btn sm ghost" data-act="rcpt" data-id="'+id+'">Receipt</button>':'')
   +(BE&&['awaiting_payment','paid','packed'].includes(o.status)?'<button class="btn sm ghost" data-act="ocancel" data-id="'+id+'">Cancel</button>':'')
   +'<a class="btn sm ghost" target="_blank" rel="noopener" href="'+esc(waTo(c.phone,'Hello '+(c.name||'')+', thank you for your order from X and O.'))+'">WhatsApp</a>'
   +(BE?(arm?'<button class="btn sm danger" data-act="odelgo" data-id="'+id+'">Tap again to delete</button><button class="btn sm ghost" data-act="odelno">Keep</button>':'<button class="btn sm ghost" data-act="odel" data-id="'+id+'">Delete</button>'):'')+'</div>'
@@ -980,7 +1004,10 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]
   else if(a==='mcov'){readForm();const m=S.form.media.splice(i,1)[0];S.form.media.unshift(m);renderAdmin()}
   else if(a==='mrm'){readForm();S.form.media.splice(i,1);renderAdmin()}
   else if(a==='fdel'){if(b.dataset.arm){try{if(BE){const r=await BE.deleteProduct(id);await refreshAll();toast(r==='hidden'?'This product has past orders, so it was hidden instead':'Product deleted');renderAdmin()}else{await S.db.doc('products/'+id).delete();toast('Product deleted')}}catch(x){toast('Could not delete')}}else{b.dataset.arm=1;b.textContent='Tap again to delete'}}
+  else if(a==='lovef'){S.loveF=v;S.loveN=9;renderLove()}
+  else if(a==='lovemore'){S.loveN=(S.loveN||9)+9;renderLove()}
   else if(a==='ostep')stepOrder(id);
+  else if(a==='shipno'){S.shipFor=null;renderAdmin()}
   else if(a==='odel'){S.delArm=id;renderAdmin()}
   else if(a==='cdel'){S.delArm=b.dataset.key;renderAdmin()}
   else if(a==='odelno'){S.delArm=null;renderAdmin()}
@@ -1029,6 +1056,8 @@ document.addEventListener('toggle',e=>{const d=e.target;if(!d.matches||!d.matche
 document.addEventListener('submit',async e=>{e.preventDefault();
   if(e.target.classList&&e.target.classList.contains('ochat')){const f=e.target,id=f.dataset.oid,ta=f.querySelector('textarea'),txt=ta.value.trim();if(!txt)return;f.querySelector('button').disabled=true;
     try{await BE.adminMessage(id,txt);ta.value='';S.orders=await BE.orders();const o=S.orders.find(x=>x.id===id);if(o)o.unread=false;paintThreads()}catch(x){toast('Message not sent. Please try again.')}f.querySelector('button').disabled=false;return}
+  if(e.target.classList&&e.target.classList.contains('shipform')){const f=e.target,id=f.dataset.id;f.querySelector('button[type=submit]').disabled=true;
+    try{await BE.setStatus(id,'shipped',f.c.value.trim(),f.t.value.trim());S.shipFor=null;await refreshAll();toast('Customer notified: handed to delivery')}catch(x){f.querySelector('button[type=submit]').disabled=false;toast('Could not update the order')}return}
   if(e.target.id==='clrForm'){const er=$('#clrErr');er.textContent='';if($('#clrTxt').value.trim()!=='DELETE'){er.textContent='Type DELETE in capital letters to confirm.';return}
     try{await BE.clearData($('#clrScope').value);await refreshAll();await loadExtras();toast('Deleted');renderAdmin()}catch(x){er.textContent=/delete_orders_first/.test(x.message||'')?'Delete the orders first, then the products.':/forbidden/.test(x.message||'')?'Only the owner can delete data.':'Could not delete. Has database step 005 been run?'}return}
   if(e.target.id==='msgForm'){const ta=$('#msgIn'),txt=ta.value.trim();if(!txt)return;const bt=e.target.querySelector('button');bt.disabled=true;
